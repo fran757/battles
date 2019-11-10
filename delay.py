@@ -3,7 +3,9 @@
 
 def delay(action):
     """Call returns callable to enforce ordered action.
-    >>> hello = delay(lambda name: print(f"Hello {name}"))
+    >>> @delay
+    ... def hello(name):
+    ...     print(f"Hello {name}")
     >>> order = hello("World")
     >>> order()
     Hello World
