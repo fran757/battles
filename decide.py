@@ -44,7 +44,9 @@ def strategy(action):
     """If alone, do nothing. (decorator)"""
 
     def order(unit, others):
-        return action(unit, others) if others else delay(lambda: None)
+        if not others or unit.is_dead:
+            return delay(lambda: None)
+        return action(unit, others)
 
     return order
 
@@ -62,6 +64,7 @@ def target_closest(unit, others):
 @strategy
 def target_weakest(unit, others):
     """'Focus' on weakest enemy (if none just be idle)."""
+    # todo: target closest among the weakest
     enemies = filter(enemy_of(unit), others)
     if not enemies:
         return delay(lambda: None)
@@ -69,4 +72,4 @@ def target_weakest(unit, others):
     return focus(unit, weakest)
 
 
-# todo: fleeing, teaming up...
+# todo: blocking, fleeing, teaming up...

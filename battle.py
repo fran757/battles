@@ -1,9 +1,5 @@
-import random
 from dataclasses import dataclass
 from typing import List
-import numpy as np
-
-from decide import target_closest, target_weakest
 from unit import Unit
 
 
@@ -22,8 +18,17 @@ class Battle:
     def update(self):
         """Make each unit take a decision, then enforce them."""
         actions = []
+
+        def other(unit):
+            """Filter other alive units."""
+
+            def check(candidate):
+                return not candidate.is_dead and candidate is not unit
+
+            return check
+
         for unit in self.units:
-            others = filter(lambda other, self=unit: other is not self, self.units)
+            others = filter(other(unit), self.units)
             actions.append(unit.decide(others))
         for action in actions:
             action()
@@ -38,7 +43,7 @@ class Battle:
 
         width = bound(1, max)
         height = bound(0, max)
-        grid = [["0" for _ in range(width)] for _ in range(height)]
+        grid = [[" " for _ in range(width)] for _ in range(height)]
 
         for unit in self.units:
             i, j = map(int, map(round, unit.coords))
@@ -50,21 +55,3 @@ class Battle:
                 raise IndexError(message)
 
         return "\n".join([" ".join(line) for line in grid])
-
-
-if __name__ == "__main__":
-    # Can't see much, gotta reduce battle size or increase grid size.
-    battle = Battle()
-    random.seed()
-    grid_size = 10
-    battle_size = 5
-    for side in range(2):
-        for _ in range(battle_size):
-            coords = np.array(np.random.randint(0, grid_size - 1, 2), float)
-            strategy = [target_closest, target_weakest][side]
-            battle.units.append(Unit(side, coords, strategy))
-    # battle.units.append(Unit(0, np.array((5,0)), target_weakest))
-    for _ in range(5):
-        print(battle)
-        print("*******")
-        battle.update()
