@@ -8,8 +8,11 @@ from unit import Unit
 
 
 @dataclass
-class Army:
-    """Unit container, monitor decision taking."""
+class Battle:
+    """Contain all units (no setter for adding units, just append).i
+    Update method to take and enforce all decisions.
+    String representation by integer grid approximation.
+    """
 
     units: List[Unit]
 
@@ -20,7 +23,7 @@ class Army:
         """Make each unit take a decision, then enforce them."""
         actions = []
         for unit in self.units:
-            others = filter(lambda other: other is not unit, self.units)
+            others = filter(lambda other, self=unit: other is not self, self.units)
             actions.append(unit.decide(others))
         for action in actions:
             action()
@@ -50,18 +53,18 @@ class Army:
 
 
 if __name__ == "__main__":
-    # Can't see much, gotta reduce army size or increase grid size.
-    army = Army()
+    # Can't see much, gotta reduce battle size or increase grid size.
+    battle = Battle()
     random.seed()
     grid_size = 10
-    army_size = 5
+    battle_size = 5
     for side in range(2):
-        for _ in range(army_size):
+        for _ in range(battle_size):
             coords = np.array(np.random.randint(0, grid_size - 1, 2), float)
             strategy = [target_closest, target_weakest][side]
-            army.units.append(Unit(side, coords, strategy))
-    # army.units.append(Unit(0, np.array((5,0)), target_weakest))
+            battle.units.append(Unit(side, coords, strategy))
+    # battle.units.append(Unit(0, np.array((5,0)), target_weakest))
     for _ in range(5):
-        print(army)
+        print(battle)
         print("*******")
-        army.update()
+        battle.update()
