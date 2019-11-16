@@ -29,5 +29,5 @@ def play_battle(battle):
 if __name__ == "__main__":
     # play_battle(prepare_battle())
     APP = QApplication([])
-    window = MainWindow()
+    window = MainWindow(prepare_battle())
     APP.exec_()
