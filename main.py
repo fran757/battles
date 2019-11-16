@@ -6,6 +6,7 @@ from decide import target_closest, target_weakest
 from gui_window import MainWindow
 from PyQt5.QtWidgets import QApplication
 
+
 def prepare_battle():
     """Battle with several lines on each side.
     Just play around with army size, position..."""
@@ -27,7 +28,7 @@ def play_battle(battle):
 
 
 if __name__ == "__main__":
-    # play_battle(prepare_battle())
+#    play_battle(prepare_battle())
     APP = QApplication([])
     window = MainWindow(prepare_battle())
     APP.exec_()
