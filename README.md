@@ -1,5 +1,4 @@
-# battles
-TDLOG Project - Battles
+# TDLOG Project - Battles
 
 ## Getting Started
 
