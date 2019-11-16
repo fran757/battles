@@ -1,6 +1,6 @@
 # TDLOG Project - Battles
 
-## Getting Started
+## Getting Started
 
 You'll need numpy and PyQt5. To start a simulation just run
 
@@ -8,7 +8,7 @@ You'll need numpy and PyQt5. To start a simulation just run
 python main.py
 ```
 
-## Authors
+## Authors
 
 
 * **Louis Hémadou** - student at the École Nationale des Ponts et Chaussées (ENPC)
