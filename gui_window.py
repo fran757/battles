@@ -21,19 +21,26 @@ class MainWindow(QGraphicsView):
         self.setScene(self.scene)
         self.show()
 
+        # To be change, need a proper stop condition
         for _ in range(100):
             self.update()
             QTest.qWait(500)
 
     def update(self):
+        """
+        To update the graphics and the grid between two steps
+        """
         self.battle.update()
         self.draw()
 
     def draw(self):
+        """
+        To draw the units
+        """
         self.scene.clear()
         for unit in self.battle.units:
             i, j = map(int, map(round, unit.coords))
-            color = {0: QColor(255*(unit.health/5), 0, 0), 
+            color = {0: QColor(255*(unit.health/5), 0, 0),
                      1: QColor(0, 0, 255*(unit.health/5))}
             self.scene.addRect(i*self.unit_size, j*self.unit_size,
                                self.unit_size, self.unit_size,
