@@ -31,9 +31,10 @@ class MainWindow(QGraphicsView):
 
     def draw(self):
         self.scene.clear()
-        color = {0: QColor(255, 0, 0), 1: QColor(0, 0, 255)}
         for unit in self.battle.units:
             i, j = map(int, map(round, unit.coords))
+            color = {0: QColor(255*(unit.health/5), 0, 0), 
+                     1: QColor(0, 0, 255*(unit.health/5))}
             self.scene.addRect(i*self.unit_size, j*self.unit_size,
                                self.unit_size, self.unit_size,
                                QPen(), QBrush(color[unit.side]))
