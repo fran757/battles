@@ -54,7 +54,7 @@ def strategy(action):
 @strategy
 def target_closest(unit, others):
     """'Focus' on closest enemy (if none just be idle)."""
-    enemies = filter(enemy_of(unit), others)
+    enemies = list(filter(enemy_of(unit), others))
     if not enemies:
         return delay(lambda: None)
     closest = sorted(enemies, key=distance_from(unit))[0]
@@ -65,7 +65,7 @@ def target_closest(unit, others):
 def target_weakest(unit, others):
     """'Focus' on weakest enemy (if none just be idle)."""
     # todo: target closest among the weakest
-    enemies = filter(enemy_of(unit), others)
+    enemies = list(filter(enemy_of(unit), others))
     if not enemies:
         return delay(lambda: None)
     weakest = sorted(enemies, key=lambda unit: unit.health)[0]
