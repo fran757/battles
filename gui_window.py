@@ -5,9 +5,7 @@ from battle import Battle
 
 
 class MainWindow(QGraphicsView):
-    """
-    The main window of the gui
-    """
+    """The main window of the gui."""
 
     def __init__(self, battle: Battle):
         super().__init__()
@@ -27,16 +25,12 @@ class MainWindow(QGraphicsView):
             QTest.qWait(500)
 
     def update(self):
-        """
-        To update the graphics and the grid between two steps
-        """
+        """Update the graphics and the grid between two steps."""
         self.battle.update()
         self.draw()
 
     def draw(self):
-        """
-        To draw the units
-        """
+        """Draw the units."""
         self.scene.clear()
         for unit in self.battle.units:
             i, j = map(int, map(round, unit.coords))

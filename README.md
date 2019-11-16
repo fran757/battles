@@ -2,10 +2,10 @@
 
 ## Getting Started
 
-You'll need numpy and PyQt5. To start a simulation just run
+You'll need numpy and PyQt5 with Python 3.7. To start a simulation just run
 
 ```
-python main.py
+python3.7 main.py
 ```
 
 ## Authors
