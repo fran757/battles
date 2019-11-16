@@ -40,36 +40,21 @@ def focus(unit, target):
     return unit.move(direction(unit, target))
 
 
-def strategy(action):
-    """If alone, do nothing. (decorator)"""
-
+def strategy(distance=0, health=0):
+    """Order are based on preference between proximity and weakness."""
     def order(unit, others):
-        if not others or unit.is_dead:
+        enemies = list(filter(enemy_of(unit), others))
+        if not enemies or unit.is_dead:
             return delay(lambda: None)
-        return action(unit, others)
+
+        def criteria(other):
+            return distance * distance_from(unit)(other) + health * unit.health
+        # todo: normalization
+
+        target = sorted(enemies, key=criteria)[0]
+        return focus(unit, target)
 
     return order
-
-
-@strategy
-def target_closest(unit, others):
-    """'Focus' on closest enemy (if none just be idle)."""
-    enemies = list(filter(enemy_of(unit), others))
-    if not enemies:
-        return delay(lambda: None)
-    closest = sorted(enemies, key=distance_from(unit))[0]
-    return focus(unit, closest)
-
-
-@strategy
-def target_weakest(unit, others):
-    """'Focus' on weakest enemy (if none just be idle)."""
-    # todo: target closest among the weakest
-    enemies = list(filter(enemy_of(unit), others))
-    if not enemies:
-        return delay(lambda: None)
-    weakest = sorted(enemies, key=lambda unit: unit.health)[0]
-    return focus(unit, weakest)
 
 
 # todo: blocking, fleeing, teaming up...
