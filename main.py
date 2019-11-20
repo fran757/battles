@@ -1,10 +1,10 @@
 import numpy as np
+from PyQt5.QtWidgets import QApplication
 
 from unit import Unit
 from battle import Battle
 from decide import strategy
 from gui_window import MainWindow
-from PyQt5.QtWidgets import QApplication
 
 
 def prepare_battle():
@@ -13,20 +13,11 @@ def prepare_battle():
     battle = Battle()
     for i in range(5):
         for j in range(10):
-            battle.units.append(Unit(0, np.array((i, j), float), strategy(distance=1)))
-            battle.units.append(
-                Unit(1, np.array((19 - i, j), float), strategy(health=1))
-            )
+            weakest = strategy(health=1)
+            closest = strategy(distance=1)
+            battle.units.append(Unit(0, np.array((i, j), float), closest))
+            battle.units.append(Unit(1, np.array((19 - i, j), float), weakest))
     return battle
-
-
-def play_battle(battle):
-    """Run a few iterations, then display battlefield and army health."""
-    for _ in range(10):
-        battle.update()
-    print(battle)
-    for side in range(2):
-        print(sum([unit.health for unit in battle.units if unit.side == side]))
 
 
 if __name__ == "__main__":
