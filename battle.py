@@ -28,7 +28,7 @@ class Battle:
             return check
 
         for unit in self.units:
-            others = filter(other(unit), self.units)
+            others = list(filter(other(unit), self.units))
             actions.append(unit.decide(others))
         for action in actions:
             action()
