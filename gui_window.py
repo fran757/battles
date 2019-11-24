@@ -22,7 +22,7 @@ class MainWindow(QGraphicsView):
         # To be change, need a proper stop condition
         for _ in range(100):
             self.update()
-            QTest.qWait(500)
+            QTest.qWait(250)
 
     def update(self):
         """Update the graphics and the grid between two steps."""
