@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Callable
-import numpy as np
 import random
+import numpy as np
 from colorama import Fore, Style
 
 from delay import delay
@@ -48,12 +48,12 @@ class Unit:
         """If health falls to 0, unit is dead."""
         self._health = max(value, 0)
         self.is_dead = self._health == 0
-    
+
     def flee(self, fleeing_prob):
         """Cowards flee from this unit"""
-        rand_value= random.random()
+        rand_value = random.random()
         if rand_value < fleeing_prob:
-            self._health -= self._health/5; # 20% health loss
+            self._health -= self._health/5  # 20% health loss
 
     def __str__(self):
         """Print health with color code for side."""
