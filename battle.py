@@ -10,7 +10,8 @@ class Battle:
     String representation by integer grid approximation.
     """
 
-    units: List[Unit] = []
+    def __init__(self):
+        self.units = []
 
     def update(self):
         """Make each unit take a decision, then enforce them."""

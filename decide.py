@@ -72,9 +72,9 @@ def strategy(distance=0, health=0):
             return distance * distance_from(unit)(other) + health * unit.health
         # todo: normalization
 
-        unit.flee(has_coward(unit, allies, enemies))
+        weakness = has_coward(unit, allies, enemies)
         target = sorted(enemies, key=criteria)[0]
-        return focus(unit, target)
+        return focus(unit, target) + unit.flee(weakness)
 
     return order
 

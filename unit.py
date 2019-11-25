@@ -35,6 +35,13 @@ class Unit:
         """Move according to own speed."""
         self.coords += self.speed * direction
 
+    @delay
+    def flee(self, fleeing_prob):
+        """Cowards flee from this unit."""
+        rand_value = random.random()
+        if rand_value < fleeing_prob:
+            self._health *= .8  # 20% health loss
+
     def decide(self, others):
         """Take decision according to own strategy."""
         return self.strategy(self, others)
@@ -48,12 +55,6 @@ class Unit:
         """If health falls to 0, unit is dead."""
         self._health = max(value, 0)
         self.is_dead = self._health == 0
-
-    def flee(self, fleeing_prob):
-        """Cowards flee from this unit"""
-        rand_value = random.random()
-        if rand_value < fleeing_prob:
-            self._health -= self._health/5  # 20% health loss
 
     def __str__(self):
         """Print health with color code for side."""
