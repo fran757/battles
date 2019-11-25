@@ -4,13 +4,19 @@
 class Order:
     """Execute actions when called.
     Orders can be chained by addition.
+    Handle summing from None.
     """
 
     def __init__(self, *actions):
         self.actions = actions
 
     def __add__(self, other):
+        if other is None:
+            return self
         return Order(*(self.actions + other.actions))
+
+    def __radd__(self, other):
+        return self.__add__(other)
 
     def __call__(self):
         for action in self.actions:

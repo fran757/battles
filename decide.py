@@ -11,7 +11,7 @@ def enemy_of(unit):
     """Filter enemies."""
 
     def is_enemy(other):
-        return other.side != unit.side
+        return other is not unit and other.side != unit.side
 
     return is_enemy
 
@@ -19,7 +19,7 @@ def enemy_of(unit):
 def ally_of(unit):
     """Filter allies."""
     def is_ally(other):
-        return other.side == unit.side
+        return other is not unit and other.side == unit.side
 
     return is_ally
 
@@ -66,7 +66,7 @@ def strategy(distance=0, health=0):
         allies = list(filter(ally_of(unit), others))
         enemies = list(filter(enemy_of(unit), others))
         if not enemies or unit.is_dead:
-            return delay(lambda: None)
+            return delay(lambda: None)()
 
         def criteria(other):
             return distance * distance_from(unit)(other) + health * unit.health

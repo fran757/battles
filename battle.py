@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List
+
 from unit import Unit
 
 
@@ -15,21 +15,9 @@ class Battle:
 
     def update(self):
         """Make each unit take a decision, then enforce them."""
-        actions = []
 
-        def other(unit):
-            """Filter other alive units."""
-
-            def check(candidate):
-                return not candidate.is_dead and candidate is not unit
-
-            return check
-
-        for unit in self.units:
-            others = list(filter(other(unit), self.units))
-            actions.append(unit.decide(others))
-        for action in actions:
-            action()
+        actions = sum((unit.decide(self.units) for unit in self.units), None)
+        actions()
 
     def __str__(self):
         """Print unit grid (rounded to integer positions).
