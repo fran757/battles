@@ -4,9 +4,11 @@ import random
 import numpy as np
 from colorama import Fore, Style
 
+from cache import named
 from delay import delay
 
 
+@named
 @dataclass
 class Unit:
     """Basic unit structure.

@@ -21,6 +21,10 @@ def prepare_battle():
 
 
 if __name__ == "__main__":
+    # b = prepare_battle()
+    # for _ in range(10):
+    #     b.update()
+
     APP = QApplication([])
     window = MainWindow(prepare_battle())
     APP.exec_()

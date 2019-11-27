@@ -4,6 +4,8 @@
    Strategies and helpful methods
 """
 from numpy import linalg as LA
+
+from cache import cache
 from delay import delay
 
 
@@ -18,6 +20,7 @@ def enemy_of(unit):
 
 def ally_of(unit):
     """Filter allies."""
+
     def is_ally(other):
         return other is not unit and other.side == unit.side
 
@@ -52,6 +55,8 @@ def has_coward(unit, allies, enemies):
     """Units further from the enemy might have fleeing issues.
     Return probability of such issues.
     """
+
+    @cache
     def distance_to_enemies(_unit):
         return sum(distance_from(_unit)(enemy) for enemy in enemies)
 
@@ -62,6 +67,7 @@ def has_coward(unit, allies, enemies):
 
 def strategy(distance=0, health=0):
     """Order are based on preference between proximity and weakness."""
+
     def order(unit, others):
         allies = list(filter(ally_of(unit), others))
         enemies = list(filter(enemy_of(unit), others))
@@ -70,6 +76,7 @@ def strategy(distance=0, health=0):
 
         def criteria(other):
             return distance * distance_from(unit)(other) + health * unit.health
+
         # todo: normalization
 
         weakness = has_coward(unit, allies, enemies)

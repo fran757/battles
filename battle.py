@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
 from unit import Unit
+from cache import Cache
 
 
 @dataclass
@@ -18,6 +19,7 @@ class Battle:
 
         actions = sum((unit.decide(self.units) for unit in self.units), None)
         actions()
+        Cache.reset()
 
     def __str__(self):
         """Print unit grid (rounded to integer positions).
