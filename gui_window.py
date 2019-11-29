@@ -3,6 +3,7 @@ from PyQt5.QtGui import QPen, QColor, QBrush
 from PyQt5.QtTest import QTest
 from battle import Battle
 
+from random import sample
 
 class MainWindow(QGraphicsView):
     """The main window of the gui."""
@@ -20,9 +21,9 @@ class MainWindow(QGraphicsView):
         self.show()
 
         # To be change, need a proper stop condition
-        for _ in range(100):
+        for _ in range(50):
             self.update()
-            QTest.qWait(250)
+            QTest.qWait(1)
 
     def update(self):
         """Update the graphics and the grid between two steps."""
@@ -32,7 +33,8 @@ class MainWindow(QGraphicsView):
     def draw(self):
         """Draw the units."""
         self.scene.clear()
-        for unit in self.battle.units:
+        # shuffle so that we also see blue units
+        for unit in sample(self.battle.units, len(self.battle.units)):
             i, j = map(int, map(round, unit.coords))
             color = {0: QColor(255*(unit.health/5), 0, 0),
                      1: QColor(0, 0, 255*(unit.health/5))}

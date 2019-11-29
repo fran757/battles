@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import QApplication
 from unit import Unit
 from battle import Battle
 from decide import strategy
-from timer import Clock
+from tools.timer import Clock
 from gui_window import MainWindow
 
 
