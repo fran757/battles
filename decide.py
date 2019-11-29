@@ -5,7 +5,7 @@
 """
 from numpy import linalg as LA
 
-from cache import cache
+from tools.cache import cache
 from delay import delay
 
 
@@ -75,9 +75,7 @@ def strategy(distance=0, health=0):
             return delay(lambda: None)()
 
         def criteria(other):
-            return distance * distance_from(unit)(other) + health * unit.health
-
-        # todo: normalization
+            return distance * distance_from(unit)(other) + health * other.health
 
         weakness = has_coward(unit, allies, enemies)
         target = sorted(enemies, key=criteria)[0]

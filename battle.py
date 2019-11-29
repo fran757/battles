@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 
 from unit import Unit
-from cache import Cache
-from timer import clock
+from tools.cache import Cache
+from tools.timer import clock
 
 
 class Battle:
