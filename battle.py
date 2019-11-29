@@ -2,11 +2,11 @@ from dataclasses import dataclass
 
 from unit import Unit
 from cache import Cache
+from timer import clock
 
 
-@dataclass
 class Battle:
-    """Contain all units (no setter for adding units, just append).i
+    """Contain all units (no setter for adding units, just append).
     Update method to take and enforce all decisions.
     String representation by integer grid approximation.
     """
@@ -14,18 +14,16 @@ class Battle:
     def __init__(self):
         self.units = []
 
+    @clock
     def update(self):
-        """Make each unit take a decision, then enforce them."""
-
-        actions = sum((unit.decide(self.units) for unit in self.units), None)
-        actions()
+        """Chain and enforce unit decisions, then reset data for next round."""
         Cache.reset()
+        sum((unit.decide(self.units) for unit in self.units), None)()
 
-    def __str__(self):
+    def __repr__(self):
         """Print unit grid (rounded to integer positions).
-        Grid size ajusted to unit max coords (should do min too).
+        Grid size ajusted to max unit coords (should do min too).
         """
-
         def bound(axis, extr):
             return int(round(extr([unit.coords[axis] for unit in self.units]))) + 1
 

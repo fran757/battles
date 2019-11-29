@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import QApplication
 from unit import Unit
 from battle import Battle
 from decide import strategy
+from timer import Clock
 from gui_window import MainWindow
 
 
@@ -21,10 +22,6 @@ def prepare_battle():
 
 
 if __name__ == "__main__":
-    # b = prepare_battle()
-    # for _ in range(10):
-    #     b.update()
-
     APP = QApplication([])
     window = MainWindow(prepare_battle())
-    APP.exec_()
+    Clock.report()
