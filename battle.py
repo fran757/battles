@@ -54,3 +54,14 @@ class Battle:
         if blue > 1 and red > 1:
             return False
         return True
+
+    def export_state(self, file_name):
+        """
+        To save the battle
+        """
+        with open(file_name, 'a') as file:
+            file.write(str(len(self.units))+'\n')
+            for i in range(len(self.units)):
+                file.write(str(self.units[i].side)+" " + str(self.units[i].coords[0]) + " " + str(
+                    self.units[i].coords[1])+ " "+str(self.units[i].health)+'\n')
+        file.close()
