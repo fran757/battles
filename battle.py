@@ -39,5 +39,29 @@ class Battle:
                 message = f"Grid shape : {height} {width}\n"
                 message += f"Attempted coords : {i} {j}\n"
                 raise IndexError(message)
-
         return "\n".join([" ".join(line) for line in grid])
+
+    def is_finished(self) -> bool:
+        """
+        To know when the massacre is finished
+        """
+        blue, red = 0, 0
+        for unit in self.units:
+            if unit.side == 1:
+                blue += 1
+            elif unit.side == 0:
+                red += 1
+        if blue > 1 and red > 1:
+            return False
+        return True
+
+    def export_state(self, file_name):
+        """
+        To save the battle
+        """
+        with open(file_name, 'a') as file:
+            file.write(str(len(self.units))+'\n')
+            for i in range(len(self.units)):
+                file.write(str(self.units[i].side)+" " + str(self.units[i].coords[0]) + " " + str(
+                    self.units[i].coords[1])+ " "+str(int(self.units[i].health))+'\n')
+        file.close()
