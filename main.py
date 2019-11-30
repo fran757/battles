@@ -17,4 +17,5 @@ if __name__ == "__main__":
     # make_simulation(prepare_battle(), "save.txt")
     # print("done !")
     window = MainWindow(Simulation("save.txt"))
+    APP.exec_()
     Clock.report()
