@@ -63,5 +63,5 @@ class Battle:
             file.write(str(len(self.units))+'\n')
             for i in range(len(self.units)):
                 file.write(str(self.units[i].side)+" " + str(self.units[i].coords[0]) + " " + str(
-                    self.units[i].coords[1])+ " "+str(self.units[i].health)+'\n')
+                    self.units[i].coords[1])+ " "+str(int(self.units[i].health))+'\n')
         file.close()
