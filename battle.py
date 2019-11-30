@@ -39,5 +39,18 @@ class Battle:
                 message = f"Grid shape : {height} {width}\n"
                 message += f"Attempted coords : {i} {j}\n"
                 raise IndexError(message)
-
         return "\n".join([" ".join(line) for line in grid])
+
+    def is_finished(self) -> bool:
+        """
+        To know when the massacre is finished
+        """
+        blue, red = 0, 0
+        for unit in self.units:
+            if unit.side == 1:
+                blue += 1
+            else:
+                red += 1
+        if blue > 1 and red > 1:
+            return False
+        return True

@@ -20,8 +20,7 @@ class MainWindow(QGraphicsView):
         self.setScene(self.scene)
         self.show()
 
-        # To be change, need a proper stop condition
-        for _ in range(50):
+        while not self.battle.is_finished():
             self.update()
             QTest.qWait(1)
 
