@@ -55,6 +55,8 @@ def has_coward(unit, allies, enemies):
     """Units further from the enemy might have fleeing issues.
     Return probability of such issues.
     """
+    if not allies or not enemies:
+        return 0
 
     @cache
     def distance_to_enemies(_unit):
@@ -68,7 +70,8 @@ def has_coward(unit, allies, enemies):
 def strategy(distance=0, health=0):
     """Order are based on preference between proximity and weakness."""
 
-    def order(unit, others):
+    def order(unit, all_units):
+        others = [unit for unit in all_units if not unit.is_dead]
         allies = list(filter(ally_of(unit), others))
         enemies = list(filter(enemy_of(unit), others))
         if not enemies or unit.is_dead:
@@ -79,7 +82,7 @@ def strategy(distance=0, health=0):
 
         weakness = has_coward(unit, allies, enemies)
         target = sorted(enemies, key=criteria)[0]
-        return focus(unit, target) + unit.flee(weakness)
+        return focus(unit, target) #+ unit.flee(weakness)
 
     return order
 
