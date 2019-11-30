@@ -35,8 +35,8 @@ class MainWindow(QGraphicsView):
         # shuffle so that we also see blue units
         for unit in sample(self.battle.units, len(self.battle.units)):
             i, j = map(int, map(round, unit.coords))
-            color = {0: QColor(255*(unit.health/5), 0, 0),
-                     1: QColor(0, 0, 255*(unit.health/5))}
+            color = {0: QColor(150*(unit.health/5)+105, 0, 0),
+                     1: QColor(0, 0, 150*(unit.health/5)+105)}
             self.scene.addRect(i*self.unit_size, j*self.unit_size,
                                self.unit_size, self.unit_size,
                                QPen(), QBrush(color[unit.side]))

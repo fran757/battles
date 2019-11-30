@@ -49,7 +49,7 @@ class Battle:
         for unit in self.units:
             if unit.side == 1:
                 blue += 1
-            else:
+            elif unit.side == 0:
                 red += 1
         if blue > 1 and red > 1:
             return False
