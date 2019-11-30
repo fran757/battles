@@ -13,6 +13,6 @@ from simulate import prepare_battle, make_simulation, Simulation
 if __name__ == "__main__":
     APP = QApplication([])
     # To generate a simulation file
-    # make_simulation(prepare_battle(), "save.txt")
+    make_simulation(prepare_battle(), "save.txt")
     window = MainWindow(Simulation("save.txt"))
     Clock.report()
