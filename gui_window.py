@@ -14,7 +14,7 @@ class MainWindow(QGraphicsView):
         self.state = 0
         self.unit_size = 10
         self.scene = QGraphicsScene()
-        self.grid_size = 20
+        self.grid_size = 50
 
         self.setGeometry(300, 300, self.grid_size*10, self.grid_size*10)
         self.setWindowTitle('Battles')
