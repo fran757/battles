@@ -23,7 +23,7 @@ class MainWindow(QGraphicsView):
 
         while not self.state == self.simulation.size-1:
             self.update()
-            QTest.qWait(100)
+            QTest.qWait(400)
 
     def update(self):
         """Update the graphics and the grid between two steps."""

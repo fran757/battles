@@ -44,7 +44,7 @@ def prepare_battle():
             weakest = strategy(health=1)
             closest = strategy(distance=1)
             battle.units.append(Unit(0, np.array((i, j), float), closest))
-            battle.units.append(Unit(1, np.array((19 - i, j), float), weakest))
+            battle.units.append(Unit(1, np.array((30 - i, j), float), weakest))
     return battle
 
 
