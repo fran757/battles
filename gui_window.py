@@ -15,6 +15,7 @@ class MainWindow(QWidget):
         self.buttons = ActionButtons()
         self.battlefield = Battlefield(simulation)
         self.play = False
+        self.setWindowTitle("Battles")
 
         layout.addWidget(self.battlefield)
         layout.addWidget(self.buttons)
@@ -32,6 +33,6 @@ class MainWindow(QWidget):
         Change the status
         """
         self.play = not self.play
-        while(self.play):
+        while self.play:
             self.battlefield.update(1)
             QTest.qWait(400)
