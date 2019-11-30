@@ -15,6 +15,7 @@ if __name__ == "__main__":
     # Uncomment to generate a new simulation file
     # print("generating simulation...")
     # make_simulation(prepare_battle(), "save.txt")
-    # print("done !")
+    # print("done !")
     window = MainWindow(Simulation("save.txt"))
+    APP.exec_()
     Clock.report()
