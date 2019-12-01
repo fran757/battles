@@ -40,7 +40,7 @@ class Unit:
         """Cowards flee from this unit."""
         rand_value = random.random()
         if rand_value < fleeing_prob:
-            self._health *= .8  # 20% health loss
+            self._health *= 0.4  # 40% health loss
 
     def decide(self, others):
         """Take decision according to own strategy."""

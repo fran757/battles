@@ -63,8 +63,13 @@ def has_coward(unit, allies, enemies):
         return sum(distance_from(_unit)(enemy) for enemy in enemies)
 
     remote = distance_to_enemies(unit)
-    remote_allies = sum(distance_to_enemies(ally) for ally in allies)
-    return 2 * remote / remote_allies
+    remote_allies = [distance_to_enemies(ally) for ally in allies] + [remote]
+    sorted_remote_allies = sorted(remote_allies)
+    index = sorted_remote_allies.index(remote)
+    if index > (9/10)*len(sorted_remote_allies):
+        return 0.5
+    else:
+        return 0
 
 
 def strategy(distance=0, health=0):
@@ -82,7 +87,7 @@ def strategy(distance=0, health=0):
 
         weakness = has_coward(unit, allies, enemies)
         target = sorted(enemies, key=criteria)[0]
-        return focus(unit, target) #+ unit.flee(weakness)
+        return focus(unit, target) + unit.flee(weakness)
 
     return order
 
