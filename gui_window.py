@@ -1,9 +1,9 @@
 from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QMenuBar, QMenu, QAction, QFileDialog
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QMenuBar, QMainWindow
+from PyQt5.QtWidgets import QMenu, QAction, QFileDialog, QLabel
 from PyQt5.QtTest import QTest
 from gui_buttons import ActionButtons
 from gui_battlefield import Battlefield
-from simulate import Simulation
 
 
 class MainMenu(QMenuBar):
@@ -31,9 +31,11 @@ class MainWindow(QWidget):
     """
     The main window of the program
     """
+
     def __init__(self, simulation):
         super().__init__()
         layout = QVBoxLayout()
+        self.message = QLabel("Welcome !")
         self.buttons = ActionButtons()
         self.battlefield = Battlefield(simulation)
         self.menu = MainMenu()
@@ -43,16 +45,25 @@ class MainWindow(QWidget):
         layout.addWidget(self.menu)
         layout.addWidget(self.battlefield)
         layout.addWidget(self.buttons)
+        layout.addWidget(self.message)
 
         self.setLayout(layout)
 
         self.menu.load.connect(self.battlefield.load_from_file)
-        self.buttons.click.connect(self.battlefield.update)
+        self.buttons.click.connect(self.update)
         self.buttons.pause.connect(self.play_pause)
 
         self.setGeometry(300, 300, self.battlefield.width()+30,
                          self.battlefield.height())
         self.show()
+
+    def update(self, step_state: int):
+        """
+        To update the battlefield and the widgets
+        """
+        self.battlefield.update(step_state)
+        self.message.setText(
+            "step "+str(self.battlefield.state+1)+"/"+str(self.battlefield.size))
 
     def play_pause(self):
         """
@@ -60,5 +71,5 @@ class MainWindow(QWidget):
         """
         self.play = not self.play
         while self.play:
-            self.battlefield.update(1)
+            self.update(1)
             QTest.qWait(400)
