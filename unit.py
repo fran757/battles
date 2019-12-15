@@ -20,15 +20,27 @@ class Unit:
     coords: np.ndarray  # where the unit is (float)
     strategy: Callable = delay(lambda *args: None)  # decision taking
     _health: int = 5  # health remaining
-    strength: int = 1  # how much damage inflicted through attacks
+    strength: int = 2  # how much damage inflicted through attacks
     reach: int = 1.5  # how far damage can be dealt
     speed: int = 1  # how far the unit can go at a time
     is_dead: bool = False
+    has_centurion = True
+
+    def real_strenght(self):
+        """Returns real strenght of the unit"""
+        if self.has_centurion:
+            return self.strength*1.5
+        return self.strength
 
     @delay
     def attack(self, target):
         """Inflict damage according to own strength."""
-        target.health -= self.strength
+        if target.has_centurion:
+            death_prob = self.real_strenght()/(target.health) # Probability that a centurion dies
+            rand_value = random.random()
+            if rand_value < death_prob:
+                target.has_centurion = False
+        target.health -= self.real_strenght()
 
     @delay
     def move(self, direction):
