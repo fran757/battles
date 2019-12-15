@@ -19,11 +19,18 @@ class Battlefield(QGraphicsView):
         self.setScene(self.scene)
         self.show()
 
+    def load_from_file(self, path: str):
+        """
+        To load a simulation from a file
+        """
+        self.simulation = Simulation(path)
+        self.state = 0
+
     def update(self, state_step: int):
         """Update the graphics and the grid between two steps."""
         if 0 <= self.state+state_step < self.simulation.size:
-            self.draw()
             self.state += state_step
+            self.draw()
 
     def draw(self):
         """Draw the units."""

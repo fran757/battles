@@ -1,8 +1,30 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout
+from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QMenuBar, QMenu, QAction, QFileDialog
 from PyQt5.QtTest import QTest
 from gui_buttons import ActionButtons
 from gui_battlefield import Battlefield
 from simulate import Simulation
+
+
+class MainMenu(QMenuBar):
+    """
+    The menubar for the mainwindow
+    """
+    load = pyqtSignal(str)
+
+    def __init__(self):
+        super().__init__()
+        self.file = self.addMenu("File")
+        self.file.addAction("Load")
+        self.file.triggered[QAction].connect(self.get_path)
+
+    def get_path(self):
+        """
+        To open a filedialog in order to get the path to a new simulation
+        """
+        filename = QFileDialog.getOpenFileName(self, 'Open file',
+                                               '/home/', "Game files (*.txt)")
+        self.load.emit(filename[0])
 
 
 class MainWindow(QWidget):
@@ -14,18 +36,22 @@ class MainWindow(QWidget):
         layout = QVBoxLayout()
         self.buttons = ActionButtons()
         self.battlefield = Battlefield(simulation)
+        self.menu = MainMenu()
         self.play = False
         self.setWindowTitle("Battles")
 
+        layout.addWidget(self.menu)
         layout.addWidget(self.battlefield)
         layout.addWidget(self.buttons)
 
         self.setLayout(layout)
 
+        self.menu.load.connect(self.battlefield.load_from_file)
         self.buttons.click.connect(self.battlefield.update)
         self.buttons.pause.connect(self.play_pause)
 
-        self.setGeometry(300, 300, self.battlefield.width()+30, self.battlefield.height())
+        self.setGeometry(300, 300, self.battlefield.width()+30,
+                         self.battlefield.height())
         self.show()
 
     def play_pause(self):
