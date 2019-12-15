@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import QMenu, QAction, QFileDialog, QLabel
 from PyQt5.QtTest import QTest
 from gui_buttons import ActionButtons
 from gui_battlefield import Battlefield
+import os
 
 
 class MainMenu(QMenuBar):
@@ -23,7 +24,7 @@ class MainMenu(QMenuBar):
         To open a filedialog in order to get the path to a new simulation
         """
         filename = QFileDialog.getOpenFileName(self, 'Open file',
-                                               '/home/', "Game files (*.txt)")
+                                               os.path.dirname(os.path.abspath(__file__)), "Game files (*.txt)")
         self.load.emit(filename[0])
 
 
