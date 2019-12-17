@@ -35,6 +35,7 @@ class Clock:
 
 
 def name(fun):
+    """Name under which the function will be recorder."""
     return f"{fun.__module__} / {fun.__qualname__}"
 
 
@@ -51,3 +52,10 @@ def clock(fun):
         return value
 
     return timed
+
+
+def clock_report():
+    """Provide timing records."""
+    print("Clock report :")
+    for name, (n, time) in Clock.report().items():
+        print(f"{name} (x{n}): {time:.3f} s")
