@@ -3,6 +3,7 @@
 import numpy as np
 from PyQt5.QtWidgets import QApplication
 import json
+import sys
 
 from unit import Unit
 from battle import Battle
@@ -14,10 +15,13 @@ from simulate import prepare_battle, make_simulation, Simulation
 
 if __name__ == "__main__":
     APP = QApplication([])
-    # Uncomment to generate a new simulation file
-    print("generating simulation...")
-    make_simulation(prepare_battle(), "save.txt")
-    print("done !")
+    if len(sys.argv) > 1 and sys.argv[1] == "-s":
+        print("generating simulation...")
+        make_simulation(prepare_battle(), "save.txt")
+        print("done !")
     window = MainWindow(Simulation("save.txt"))
     APP.exec_()
-    Clock.report()
+
+    for name, (n, time) in Clock.report().items():
+        print(f"{name} (x{n}): {time:.3f} s")
+

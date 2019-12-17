@@ -37,7 +37,8 @@ class Simulation:
 
 def prepare_battle():
     """Battle with several lines on each side.
-    Just play around with army size, position..."""
+    Just play around with army size, position...
+    """
     battle = Battle()
     for i in range(10):
         for j in range(20):
@@ -48,15 +49,13 @@ def prepare_battle():
     return battle
 
 
-def make_simulation(init_battle: Battle, file_name: str):
-    """
-    To save the battle in a file
-    """
+def make_simulation(battle: Battle, file_name: str):
+    """Save the battle in a file."""
     state = 0
     # In order to erase the content of the file
     with open(file_name, 'w') as file:
         file.close()
-    while not init_battle.is_finished():
+    while not battle.is_finished():
         state += 1
-        init_battle.update()
-        init_battle.export_state(file_name)
+        battle.update()
+        battle.export_state(file_name)

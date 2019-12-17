@@ -27,18 +27,27 @@ class Clock:
     @classmethod
     def report(cls):
         """Print mean of each record."""
-        for name, value in cls._known.items():
-            print(name, sum(value.records)/len(value.records))
+        records = {}
+        for name, instance in cls._known.items():
+            record = instance.records
+            records.update({name: (len(record), sum(record))})
+        return records
+
+
+def name(fun):
+    return f"{fun.__module__} / {fun.__qualname__}"
 
 
 def clock(fun):
     """Clock decorator : register 'fun' execution times.
     Closure preserves method identity.
     """
+
     def timed(*args, **kwargs):
         before = time()
         value = fun(*args, **kwargs)
         now = time()
-        Clock.provide(fun.__qualname__).record(now - before)
+        Clock.provide(name(fun)).record(now - before)
         return value
+
     return timed
