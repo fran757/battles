@@ -53,6 +53,7 @@ class MainWindow(QWidget):
         self.menu.load.connect(self.battlefield.load_from_file)
         self.buttons.click.connect(self.update)
         self.buttons.pause.connect(self.play_pause)
+        self.buttons.zoom_io.connect(self.battlefield.zoom)
 
         self.setGeometry(300, 300, self.battlefield.width()+30,
                          self.battlefield.height())

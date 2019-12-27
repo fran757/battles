@@ -16,6 +16,8 @@ class Battlefield(QGraphicsView):
         self.scene = QGraphicsScene()
         self.grid_size = 50
 
+        self.zoom_level = 1
+
         self.setGeometry(300, 300, self.grid_size*10, self.grid_size*10)
         self.setScene(self.scene)
         self.show()
@@ -32,6 +34,20 @@ class Battlefield(QGraphicsView):
         if 0 <= self._state+state_step < self.simulation.size:
             self._state += state_step
             self.draw()
+
+    def zoom(self, precision: float):
+        """
+        To zoom in on the picture
+        """
+        self.zoom_level *= precision
+        self.draw()
+
+    def move(self, x_axis: int, y_axis: int):
+        """
+        To move the camera on the scene
+        """
+        self.camera[0] += x_axis
+        self.camera[1] += y_axis
 
     @property
     def size(self):
@@ -55,6 +71,8 @@ class Battlefield(QGraphicsView):
             i, j = [unit[1], unit[2]]
             color = {0: QColor(150*(unit[3]/5)+105, 0, 0),
                      1: QColor(0, 0, 150*(unit[3]/5)+105)}
-            self.scene.addRect(i*self.unit_size, j*self.unit_size,
-                               self.unit_size, self.unit_size,
+            self.scene.addRect(i*self.unit_size*self.zoom_level,
+                               j*self.unit_size*self.zoom_level,
+                               self.unit_size*self.zoom_level,
+                               self.unit_size*self.zoom_level,
                                QPen(), QBrush(color[unit[0]]))
