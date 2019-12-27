@@ -1,6 +1,6 @@
-from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtCore import pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QMenuBar, QMainWindow
-from PyQt5.QtWidgets import QMenu, QAction, QFileDialog, QLabel
+from PyQt5.QtWidgets import QMenu, QAction, QFileDialog, QLabel, QComboBox
 from PyQt5.QtTest import QTest
 from gui_buttons import ActionButtons
 from gui_battlefield import Battlefield
@@ -35,15 +35,21 @@ class MainWindow(QWidget):
 
     def __init__(self, simulation):
         super().__init__()
+
+        colormaps = ["health", "strength"]
         layout = QVBoxLayout()
         self.message = QLabel("Welcome !")
         self.buttons = ActionButtons()
         self.battlefield = Battlefield(simulation)
+        self.select = QComboBox()
+        self.select.addItems(colormaps)
+
         self.menu = MainMenu()
         self.play = False
         self.setWindowTitle("Battles")
 
         layout.addWidget(self.menu)
+        layout.addWidget(self.select)
         layout.addWidget(self.battlefield)
         layout.addWidget(self.buttons)
         layout.addWidget(self.message)
@@ -54,6 +60,7 @@ class MainWindow(QWidget):
         self.buttons.click.connect(self.update)
         self.buttons.pause.connect(self.play_pause)
         self.buttons.zoom_io.connect(self.battlefield.zoom)
+        self.select.activated[str].connect(self.battlefield.change_colormap)
 
         self.setGeometry(300, 300, self.battlefield.width()+30,
                          self.battlefield.height())

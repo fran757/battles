@@ -15,6 +15,7 @@ class Battlefield(QGraphicsView):
         self.unit_size = 10
         self.scene = QGraphicsScene()
         self.grid_size = 50
+        self.colormap = "health"
 
         self.zoom_level = 1
 
@@ -63,14 +64,32 @@ class Battlefield(QGraphicsView):
         """
         return self._state
 
+    def change_colormap(self, color: str):
+        """
+        To change the colormap
+        """
+        self.colormap = color
+        self.draw()
+
+    def gen_color(self, max_val, index, unit):
+        """
+        To generate a colormap
+        """
+        return {0: QColor(150*(unit[index]/max_val)+105, 0, 0),
+                1: QColor(0, 0, 150*(unit[index]/max_val)+105)}
+
     def draw(self):
         """Draw the units."""
         self.scene.clear()
         # shuffle so that we also see blue units
         for unit in self.simulation.get_state(self._state):
             i, j = [unit[1], unit[2]]
-            color = {0: QColor(150*(unit[3]/5)+105, 0, 0),
-                     1: QColor(0, 0, 150*(unit[3]/5)+105)}
+
+            if self.colormap == "health":
+                color = self.gen_color(5, 3, unit)
+            elif self.colormap == "strength":
+                color = self.gen_color(10, 4, unit)
+
             self.scene.addRect(i*self.unit_size*self.zoom_level,
                                j*self.unit_size*self.zoom_level,
                                self.unit_size*self.zoom_level,

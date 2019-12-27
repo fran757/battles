@@ -20,7 +20,8 @@ class Simulation:
                     units.append([int(lines[i+j][0]),
                                   round(float(lines[i+j][1])),
                                   round(float(lines[i+j][2])),
-                                  int(lines[i+j][3])])
+                                  int(lines[i+j][3]),
+                                  int(lines[i+j][4])])
                 self.states.append(units)
                 i += size + 1
         self._size = len(self.states)
