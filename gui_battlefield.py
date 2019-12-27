@@ -71,10 +71,11 @@ class Battlefield(QGraphicsView):
         self.colormap = color
         self.draw()
 
-    def gen_color(self, max_val, index, unit):
+    def gen_color(self, index, unit):
         """
         To generate a colormap
         """
+        max_val = max([unit[index] for unit in self.simulation.get_state(self._state)])
         return {0: QColor(150*(unit[index]/max_val)+105, 0, 0),
                 1: QColor(0, 0, 150*(unit[index]/max_val)+105)}
 
@@ -86,9 +87,9 @@ class Battlefield(QGraphicsView):
             i, j = [unit[1], unit[2]]
 
             if self.colormap == "health":
-                color = self.gen_color(5, 3, unit)
+                color = self.gen_color(3, unit)
             elif self.colormap == "strength":
-                color = self.gen_color(10, 4, unit)
+                color = self.gen_color(4, unit)
 
             self.scene.addRect(i*self.unit_size*self.zoom_level,
                                j*self.unit_size*self.zoom_level,
