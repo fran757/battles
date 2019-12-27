@@ -22,6 +22,7 @@ class Battlefield(QGraphicsView):
         self.setGeometry(300, 300, self.grid_size*10, self.grid_size*10)
         self.setScene(self.scene)
         self.show()
+        self.draw()
 
     def load_from_file(self, path: str):
         """
