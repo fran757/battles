@@ -37,6 +37,14 @@ class Battlefield(QGraphicsView):
             self._state += state_step
             self.draw()
 
+    def go_to_state(self, state):
+        """
+        Going to the state
+        """
+        if 0 <= state < self.simulation.size:
+            self._state = int(state)
+            self.draw()
+
     def zoom(self, precision: float):
         """
         To zoom in on the picture
