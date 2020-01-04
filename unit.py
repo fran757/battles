@@ -21,10 +21,22 @@ class Unit:
     strategy: Callable = delay(lambda *args: None)  # decision taking
     _health: int = 5  # health remaining
     _strength: int = 2  # how much damage inflicted through attacks
+    _braveness: int = 10 # braveness of the unit
     reach: int = 1.5  # how far damage can be dealt
     speed: int = 1  # how far the unit can go at a time
     is_dead: bool = False
-    has_centurion = True
+    is_fleeing: bool = False
+    is_centurion = False
+
+    @property
+    def braveness(self):
+        return self._braveness
+
+    @braveness.setter
+    def braveness(self, value):
+        """If braveless falls to 0, unit stats fleeing"""
+        self._braveness = max(value, 0)
+        self.is_fleeing = self._braveness == 0
 
     @property
     def health(self):
@@ -39,18 +51,16 @@ class Unit:
     @property
     def strength(self):
         """Returns real strenght of the unit"""
-        if self.has_centurion:
-            return self._strength*1.5
         return self._strength
+    
+    @delay
+    def moral_damage(self, value):
+        """Decreases braveness by value"""
+        self.braveness -= value
 
     @delay
     def attack(self, target):
         """Inflict damage according to own strength."""
-        if target.has_centurion:
-            death_prob = self.strength/(target.health) # Probability that a centurion dies
-            rand_value = random.random()
-            if rand_value < death_prob:
-                target.has_centurion = False
         target.health -= self.strength
 
     @delay

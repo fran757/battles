@@ -99,7 +99,8 @@ class Battlefield(QGraphicsView):
                 color = self.gen_color(3, unit)
             elif self.colormap == "strength":
                 color = self.gen_color(4, unit)
-
+            elif self.colormap == "braveness":
+                color = self.gen_color(5, unit)
             self.scene.addRect(i*self.unit_size*self.zoom_level,
                                j*self.unit_size*self.zoom_level,
                                self.unit_size*self.zoom_level,

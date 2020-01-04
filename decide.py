@@ -50,27 +50,35 @@ def focus(unit, target):
         return unit.attack(target)
     return unit.move(direction(unit, target))
 
-
-def has_coward(unit, allies, enemies):
-    """Units further from the enemy might have fleeing issues.
-    Return probability of such issues.
-    """
-    if not allies or not enemies:
-        return 0
-
-    @cache
-    def distance_to_enemies(_unit):
-        return sum(distance_from(_unit)(enemy) for enemy in enemies)
-
-    remote = distance_to_enemies(unit)
-    remote_allies = [distance_to_enemies(ally) for ally in allies] + [remote]
-    sorted_remote_allies = sorted(remote_allies)
-    index = sorted_remote_allies.index(remote)
-    if index > (9/10)*len(sorted_remote_allies):
-        return 0.5
+def moral_damage(unit, enemies):
+    """Units take moral damage at every step,
+    their braveness decreases"""
+    if unit.braveness == 0:
+        return
     else:
-        return 0
+        return unit.moral_damage(2)
 
+def flee(unit, enemies):
+    """Units with 0 braveness try to escape from
+    the closest enemy"""
+    if not enemies or unit.braveness != 0:
+        return
+
+    if unit.braveness == 0:
+        @cache
+        def closest_enemy(_unit):
+            _closest_enemy = enemies[0]
+            for enemy in enemies[1:]:
+                if distance_from(_unit)(enemy) < distance_from(_unit)(_closest_enemy):
+                    if (enemy.coords != unit.coords).any() and not enemy.is_dead:
+                        _closest_enemy = enemy
+                return _closest_enemy
+        enemy_to_flee = closest_enemy(unit)
+        print("enemy_to_flee coords")
+        print(enemy_to_flee.coords)
+        print("unit coords")
+        print(unit.coords)
+        return unit.move(-direction(unit, enemy_to_flee))
 
 def strategy(distance=0, health=0):
     """Order are based on preference between proximity and weakness."""
@@ -85,9 +93,10 @@ def strategy(distance=0, health=0):
         def criteria(other):
             return distance * distance_from(unit)(other) + health * other.health
 
-        weakness = has_coward(unit, allies, enemies)
         target = sorted(enemies, key=criteria)[0]
-        return focus(unit, target) + unit.flee(weakness)
+
+
+        return focus(unit, target) + moral_damage(unit, enemies)
 
     return order
 
