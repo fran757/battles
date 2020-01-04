@@ -35,7 +35,7 @@ class Battle:
             file.write(str(len(self.units))+'\n')
             for i in range(len(self.units)):
                 file.write(str(self.units[i].side)+" " + str(self.units[i].coords[0]) + " " + str(
-                    self.units[i].coords[1])+ " "+str(int(self.units[i].health))+" "+str(int(self.units[i].strength))+'\n')
+                    self.units[i].coords[1])+ " "+str(int(self.units[i].health))+" "+str(int(self.units[i].strength))+" "+str(self.units[i].braveness)+'\n')
         file.close()
 
     def __repr__(self):

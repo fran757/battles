@@ -36,7 +36,7 @@ class MainWindow(QWidget):
     def __init__(self, simulation):
         super().__init__()
 
-        colormaps = ["health", "strength"]
+        colormaps = ["health", "strength", "braveness"]
         layout = QVBoxLayout()
         self.message = QLabel("Welcome !")
         self.buttons = ActionButtons()
