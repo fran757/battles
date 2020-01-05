@@ -21,12 +21,12 @@ class Unit:
     strategy: Callable = delay(lambda *args: None)  # decision taking
     _health: int = 5  # health remaining
     _strength: int = 2  # how much damage inflicted through attacks
-    _braveness: int = 10 # braveness of the unit
+    _braveness: int = 100 # braveness of the unit
     reach: int = 1.5  # how far damage can be dealt
     speed: int = 1  # how far the unit can go at a time
     is_dead: bool = False
     is_fleeing: bool = False
-    is_centurion = False
+    is_centurion: bool = False
 
     @property
     def braveness(self):
@@ -52,7 +52,12 @@ class Unit:
     def strength(self):
         """Returns real strenght of the unit"""
         return self._strength
-    
+
+    @delay
+    def reset_braveness(self):
+        """Resets braveness to its initial value"""
+        self.braveness = 100
+
     @delay
     def moral_damage(self, value):
         """Decreases braveness by value"""

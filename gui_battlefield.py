@@ -85,7 +85,6 @@ class Battlefield(QGraphicsView):
         To generate a colormap
         """
         max_val = max([unit[index] for unit in self.simulation.get_state(0)])
-        print(max_val)
         return {0: QColor(150*(unit[index]/max_val)+105, 0, 0),
                 1: QColor(0, 0, 150*(unit[index]/max_val)+105)}
 
@@ -95,7 +94,6 @@ class Battlefield(QGraphicsView):
         # shuffle so that we also see blue units
         for unit in self.simulation.get_state(self._state):
             i, j = [unit[1], unit[2]]
-
             if self.colormap == "health":
                 color = self.gen_color(3, unit)
             elif self.colormap == "strength":

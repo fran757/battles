@@ -43,11 +43,14 @@ def prepare_battle():
     """
     battle = Battle()
     for i in range(10):
-        for j in range(20):
+        for j in range(11):
             weakest = strategy(health=1)
             closest = strategy(distance=1)
             battle.units.append(Unit(0, np.array((i, j), float), closest))
             battle.units.append(Unit(1, np.array((30 - i, j), float), weakest))
+    battle.units.append(Unit(0, np.array((10, 5), float), closest, 10, 4, 100, 1.5, 1, False, False, True))
+    battle.units.append(Unit(1, np.array((20, 5), float), closest, 10, 4, 100, 1.5, 1, False, False, True))
+
     return battle
 
 
