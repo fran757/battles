@@ -5,6 +5,7 @@ import numpy as np
 from colorama import Fore, Style
 
 from delay import delay
+from tools.log import log
 
 
 @dataclass
@@ -69,6 +70,7 @@ class Unit:
         target.health -= self.strength
 
     @delay
+    @log("{self.side} par là : {direction}")
     def move(self, direction):
         """Move according to own speed."""
         self.coords += self.speed * direction
