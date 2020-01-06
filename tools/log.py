@@ -44,16 +44,25 @@ class Logger:
 
 
 def log(message):
-    """Give message formatting as decorator argument.
-    Will log through Logger.
+    """- As a decorator :
+    Give message formatting as decorator argument.
+    Return value is captured as "output".
+    Will log through Logger on each call.
+    - Otherwise will accept an empty call and log the message.
     >>> @log("double {bar} is {output}")
     ... def foo(bar):
     ...     return 2*bar
     >>> foo(2)
     double 2 is 4
     4
+    >>> log("Hello World")()
+    Hello World
     """
-    def wrapper(fun):
+    def wrapper(fun=None):
+        if fun is None:
+            Logger().log(message)
+            return
+
         formats = {}
         def wrapped(*args, **kwargs):
             for name, value in zip(signature(fun).parameters, args):
