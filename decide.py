@@ -8,6 +8,8 @@ from numpy import linalg as LA
 from tools.cache import cache
 from delay import delay
 
+import random
+
 
 def enemy_of(unit):
     """Filter enemies."""
@@ -36,11 +38,9 @@ def distance_from(unit):
     return distance
 
 
-def direction(unit, other, origin="0"):
+def direction(unit, other):
     """Orientation towards other unit."""
     delta = other.coords - unit.coords
-    if LA.norm(delta) == 0:
-        print("aaaaaaaaaaaaaaaa c'est pas censé arriver " + origin)
     return delta / LA.norm(delta)
 
 
@@ -52,22 +52,26 @@ def focus(unit, target):
         return unit.attack(target)
     return unit.move(direction(unit, target))
 
+
 def find_centurion(allies):
     for ally in allies:
         if ally.is_centurion and not ally.is_dead:
             return True, ally
     return [False]
 
+
 def is_close_from_centurion(unit, centurion, threshold):
     if LA.norm(unit.coords - centurion.coords) < threshold:
         return True
     return False
+
 
 def moral_damage(unit, allies, enemies, search_result):
     """Units take moral damage at every step,
     their braveness decreases"""
     if unit.braveness == 0:
         return
+
     @cache
     def distance_to_enemies(_unit):
         return sum(distance_from(_unit)(enemy) for enemy in enemies)
@@ -75,24 +79,25 @@ def moral_damage(unit, allies, enemies, search_result):
     remote_allies = [distance_to_enemies(ally) for ally in allies] + [remote]
     sorted_remote_allies = sorted(remote_allies)
     index = sorted_remote_allies.index(remote)
-    if search_result[0]: # there is a centurion
+    if search_result[0]:  # there is a centurion
         centurion = search_result[1]
-        if is_close_from_centurion(unit, centurion, 3):
+        if is_close_from_centurion(unit, centurion, 7):
             return unit.reset_braveness()
-    elif index > (1/2)*len(sorted_remote_allies):
-        coeff1 = len([enemy for enemy in enemies if not enemy.is_dead])/len(enemies)
-        coeff2 = index/len(allies)
-        _moral_damage = int(50*coeff1*coeff2)
-        return unit.moral_damage(_moral_damage)
+    return unit.moral_damage(10)
 
-def flee(unit, enemies):
-    """Units with 0 braveness try to escape from
-    the closest enemy"""
-    if not enemies or unit.braveness != 0:
-        return
 
+def do_something(unit, target, enemies):
     if unit.braveness == 0:
-        @cache
+        direction1 = -1 + 2*random.random()
+        direction2 = -1 + 2*random.random()
+        return unit.move([direction1, direction2])
+    else:
+        if distance_from(unit)(target) <= unit.reach:
+            return unit.attack(target)
+        return unit.move(direction(unit, target))
+
+
+"""        @cache
         def closest_enemy(_unit):
             # finding an enemy not over unit
             k = 0
@@ -106,7 +111,9 @@ def flee(unit, enemies):
                         _closest_enemy = enemy
                 return _closest_enemy
         enemy_to_flee = closest_enemy(unit)
-        return unit.move(-direction(unit, enemy_to_flee, "coming from flee"))
+        return unit.move(-direction(unit, enemy_to_flee))
+"""
+
 
 def strategy(distance=0, health=0):
     """Order are based on preference between proximity and weakness."""
@@ -124,8 +131,7 @@ def strategy(distance=0, health=0):
 
         target = sorted(enemies, key=criteria)[0]
 
-
-        return focus(unit, target) + moral_damage(unit, allies, enemies, search_result)
+        return do_something(unit, target, enemies) + moral_damage(unit, allies, enemies, search_result)
 
     return order
 

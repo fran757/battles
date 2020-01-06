@@ -21,7 +21,7 @@ class Unit:
     coords: np.ndarray  # where the unit is (float)
     strategy: Callable = delay(lambda *args: None)  # decision taking
     _health: int = 5  # health remaining
-    _strength: int = 2  # how much damage inflicted through attacks
+    _strength: int = 4  # how much damage inflicted through attacks
     _braveness: int = 100 # braveness of the unit
     reach: int = 1.5  # how far damage can be dealt
     speed: int = 1  # how far the unit can go at a time

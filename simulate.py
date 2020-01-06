@@ -48,8 +48,8 @@ def prepare_battle():
             closest = strategy(distance=1)
             battle.units.append(Unit(0, np.array((i, j), float), closest))
             battle.units.append(Unit(1, np.array((30 - i, j), float), weakest))
-    battle.units.append(Unit(0, np.array((10, 5), float), closest, 10, 4, 100, 1.5, 1, False, False, True))
-    battle.units.append(Unit(1, np.array((20, 5), float), closest, 10, 4, 100, 1.5, 1, False, False, True))
+    battle.units.append(Unit(0, np.array((10, 5), float), closest, 1000, 100, 100, 1.5, 1, False, False, True))
+    battle.units.append(Unit(1, np.array((20, 5), float), closest, 1000, 100, 100, 1.5, 1, False, False, True))
 
     return battle
 
@@ -60,7 +60,7 @@ def make_simulation(battle: Battle, file_name: str):
     # In order to erase the content of the file
     with open(file_name, 'w') as file:
         file.close()
-    while not battle.is_finished():
+    while not battle.is_finished() and state<100:
         state += 1
         battle.update()
         battle.export_state(file_name)
