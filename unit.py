@@ -51,7 +51,7 @@ class Unit:
 
     @property
     def strength(self):
-        """Returns real strenght of the unit"""
+        """Returns real strength of the unit"""
         return self._strength
 
     @delay
