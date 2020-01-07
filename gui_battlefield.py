@@ -50,6 +50,7 @@ class Battlefield(QGraphicsView):
         To zoom in on the picture
         """
         self.zoom_level *= precision
+        self.resetCachedContent()
         self.draw()
 
     def move(self, x_axis: int, y_axis: int):

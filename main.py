@@ -24,6 +24,6 @@ if __name__ == "__main__":
         print("done !")
     if not "-a" in sys.argv:
         window = MainWindow(Simulation("save.txt"))
-        APP.exec_()
+        sys.exit(APP.exec_())
 
     clock_report()
