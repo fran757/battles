@@ -93,15 +93,16 @@ class Battlefield(QGraphicsView):
         self.scene.clear()
         # shuffle so that we also see blue units
         for unit in self.simulation.get_state(self._state):
-            i, j = [unit[1], unit[2]]
-            if self.colormap == "health":
-                color = self.gen_color(3, unit)
-            elif self.colormap == "strength":
-                color = self.gen_color(4, unit)
-            elif self.colormap == "braveness":
-                color = self.gen_color(5, unit)
-            self.scene.addRect(i*self.unit_size*self.zoom_level,
-                               j*self.unit_size*self.zoom_level,
-                               self.unit_size*self.zoom_level,
-                               self.unit_size*self.zoom_level,
-                               QPen(), QBrush(color[unit[0]]))
+            if unit[3] != 0:
+                i, j = [unit[1], unit[2]]
+                if self.colormap == "health":
+                    color = self.gen_color(3, unit)
+                elif self.colormap == "strength":
+                    color = self.gen_color(4, unit)
+                elif self.colormap == "braveness":
+                    color = self.gen_color(5, unit)
+                self.scene.addRect(i*self.unit_size*self.zoom_level,
+                                   j*self.unit_size*self.zoom_level,
+                                   self.unit_size*self.zoom_level,
+                                   self.unit_size*self.zoom_level,
+                                   QPen(), QBrush(color[unit[0]]))
