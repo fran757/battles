@@ -18,8 +18,8 @@ class Simulation:
                 size = int(lines[i][0])
                 for j in range(1, size+1):
                     units.append([int(lines[i+j][0]),
-                                  round(float(lines[i+j][1])),
-                                  round(float(lines[i+j][2])),
+                                  float(lines[i+j][1]),
+                                  float(lines[i+j][2]),
                                   int(lines[i+j][3]),
                                   int(lines[i+j][4]),
                                   int(lines[i+j][5])])
