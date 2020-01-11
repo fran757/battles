@@ -79,7 +79,9 @@ class InfoBox(QWidget):
     To display infos on a unit
     """
 
-    checked = pyqtSignal()
+    mod_checked = pyqtSignal()
+    simu_checked = pyqtSignal()
+    generate = pyqtSignal()
 
     def __init__(self, unit: GraphicUnit):
         super().__init__()
@@ -87,14 +89,20 @@ class InfoBox(QWidget):
         layout = QVBoxLayout()
 
         self.change_mod = QCheckBox("edit mode")
-
+        self.change_simu = QCheckBox("auto generation")
+        self.bgenerate = QPushButton()
         self.side = QLabel("side: "+str(self.unit.side))
         self.health = QLabel("health: "+str(self.unit.health))
         self.strength = QLabel("strength: "+str(self.unit.strength))
         self.braveness = QLabel("braveness: "+str(self.unit.braveness))
         self.centurion = QLabel("centurion: "+str(self.unit.is_centurion))
 
+
+        self.bgenerate.setText("Generate !")
+
         layout.addWidget(self.change_mod)
+        layout.addWidget(self.change_simu)
+        layout.addWidget(self.bgenerate)
         layout.addWidget(self.side)
         layout.addWidget(self.health)
         layout.addWidget(self.strength)
@@ -102,10 +110,18 @@ class InfoBox(QWidget):
 
         self.setLayout(layout)
 
-        self.change_mod.stateChanged.connect(self.box_checked)
+        self.change_mod.stateChanged.connect(self.mod_box_checked)
+        self.change_simu.stateChanged.connect(self.simu_box_checked)
+        self.bgenerate.clicked.connect(self.start_generation)
 
-    def box_checked(self):
-        self.checked.emit()
+    def start_generation(self):
+        self.generate.emit()
+
+    def mod_box_checked(self):
+        self.mod_checked.emit()
+
+    def simu_box_checked(self):
+        self.simu_checked.emit()
 
     def change_unit(self, unit: GraphicUnit):
         self.unit = unit

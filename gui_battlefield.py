@@ -23,6 +23,7 @@ class Battlefield(QGraphicsView):
         self.zoom_level = 1
         self.selected_unit = 0
         self.edit = False
+        self.simu = False
 
         self.wait = False
 
@@ -116,13 +117,14 @@ class Battlefield(QGraphicsView):
             new_y = (pos.y()/(self.zoom_level*self.unit_size))-10
             self.simulation.get_state(self._state)[self.selected_unit].move(new_x, new_y)
             self.draw()
-            self.wait_mode_on()
-            self.export("new.txt")
-            self.wait_mode_off()
-            self.load_from_file("new.txt")
+            if self.simu:
+                self.instant_export()
 
     def change_mod(self):
         self.edit = not(self.edit)
+
+    def change_simu(self):
+        self.simu = not(self.simu)
 
     def gen_color(self, index, unit):
         """
@@ -157,3 +159,9 @@ class Battlefield(QGraphicsView):
     def export(self, name):
         """To export the current state"""
         self.simulation.export(self.state, name)
+
+    def instant_export(self):
+        self.wait_mode_on()
+        self.export("new.txt")
+        self.wait_mode_off()
+        self.load_from_file("new.txt")

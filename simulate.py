@@ -133,7 +133,7 @@ def make_simulation(battle: Battle, file_name: str):
         file.write("1 0 \n") #arguments for strategy, health and distance, in the order of sides, to improve
         file.write("0 1 \n")
         file.close()
-    while not battle.is_finished() and state < 100:
+    while not battle.is_finished() and state < 200:
         state += 1
         battle.update()
         battle.export_state(file_name)
