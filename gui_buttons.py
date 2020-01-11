@@ -6,6 +6,7 @@ class Button(QPushButton):
     """
     A custom and fancy button
     """
+
     def __init__(self, label, value=0):
         super().__init__()
         self.setFixedHeight(30)

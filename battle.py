@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-
 from unit import Unit
 from tools.cache import Cache
 from tools.timer import clock

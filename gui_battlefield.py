@@ -104,6 +104,6 @@ class Battlefield(QGraphicsView):
                     color = self.gen_color(5, unit)
                 self.scene.addRect(i*self.unit_size*self.zoom_level,
                                    j*self.unit_size*self.zoom_level,
-                                   self.unit_size*self.zoom_level,
-                                   self.unit_size*self.zoom_level,
+                                   self.unit_size,
+                                   self.unit_size,
                                    QPen(), QBrush(color[unit[0]]))
