@@ -1,5 +1,5 @@
 from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtWidgets import QWidget, QPushButton, QHBoxLayout, QVBoxLayout, QLabel
+from PyQt5.QtWidgets import QWidget, QPushButton, QHBoxLayout, QVBoxLayout, QLabel, QCheckBox
 from simulate import GraphicUnit
 
 
@@ -78,10 +78,15 @@ class InfoBox(QWidget):
     """
     To display infos on a unit
     """
+
+    checked = pyqtSignal()
+
     def __init__(self, unit: GraphicUnit):
         super().__init__()
         self.unit = unit
         layout = QVBoxLayout()
+
+        self.change_mod = QCheckBox("edit mode")
 
         self.side = QLabel("side: "+str(self.unit.side))
         self.health = QLabel("health: "+str(self.unit.health))
@@ -89,12 +94,18 @@ class InfoBox(QWidget):
         self.braveness = QLabel("braveness: "+str(self.unit.braveness))
         self.centurion = QLabel("centurion: "+str(self.unit.is_centurion))
 
+        layout.addWidget(self.change_mod)
         layout.addWidget(self.side)
         layout.addWidget(self.health)
         layout.addWidget(self.strength)
         layout.addWidget(self.braveness)
 
         self.setLayout(layout)
+
+        self.change_mod.stateChanged.connect(self.box_checked)
+
+    def box_checked(self):
+        self.checked.emit()
 
     def change_unit(self, unit: GraphicUnit):
         self.unit = unit

@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from PyQt5.QtGui import QPen, QColor, QBrush
-from PyQt5.QtCore import pyqtSignal, QObject
 from battle import Battle
 from unit import Unit
 from decide import strategy
@@ -44,12 +43,10 @@ class GraphicUnit:
         self.y = new_y
 
 
-class Simulation(QObject):
+class Simulation:
     """
     A simple class to load a simulation from a file
     """
-    started = pyqtSignal()
-    finished = pyqtSignal()
 
     def __init__(self, file_name):
         super().__init__()
@@ -91,7 +88,6 @@ class Simulation(QObject):
         """
         To regenerate a simulation file from a state in Simulation
         """
-        self.started.emit()
         print("Generating new simulation...")
         battle = Battle()
         graph_units = self.get_state(state)
@@ -106,7 +102,6 @@ class Simulation(QObject):
                                      gunit.is_dead, gunit.is_fleeing,
                                      gunit.is_centurion))
         make_simulation(battle, name)
-        self.finished.emit()
         print("... Done !")
 
 

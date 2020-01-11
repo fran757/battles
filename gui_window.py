@@ -85,6 +85,7 @@ class MainWindow(QWidget):
         self.select.activated[str].connect(self.battlefield.change_colormap)
         self.slide.valueChanged.connect(self.valuechange)
         self.battlefield.click.connect(self.change_selected_unit)
+        self.info.checked.connect(self.battlefield.change_mod)
 
         self.setGeometry(300, 300, self.battlefield.width()+110,
                          self.battlefield.height())

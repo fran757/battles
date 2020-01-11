@@ -22,6 +22,9 @@ class Battlefield(QGraphicsView):
         self.background = QPixmap("fond.png")
         self.zoom_level = 1
         self.selected_unit = 0
+        self.edit = False
+
+        self.wait = False
 
         self.mousePressEvent = self.on_mousePressEvent
         self.mouseMoveEvent = self.on_mouseMoveEvent
@@ -97,22 +100,29 @@ class Battlefield(QGraphicsView):
                 self.draw()
 
     def on_mouseMoveEvent(self, event):
-        self.draw()
-        pos = self.mapToScene(event.pos())
-        self.scene.addRect(pos.x(), pos.y(),
-                           self.unit_size,
-                           self.unit_size,
-                           QPen(), QBrush(QColor(0, 255, 0, 125)))
-        QTest.qWait(10)
+        if(self.edit):
+            self.draw()
+            pos = self.mapToScene(event.pos())
+            self.scene.addRect(pos.x(), pos.y(),
+                               self.unit_size,
+                               self.unit_size,
+                               QPen(), QBrush(QColor(0, 255, 0, 125)))
+            QTest.qWait(10)
 
     def on_mouseReleaseEvent(self, event):
-        pos = self.mapToScene(event.pos())
-        new_x = (pos.x()/(self.zoom_level*self.unit_size))-10
-        new_y = (pos.y()/(self.zoom_level*self.unit_size))-10
-        self.simulation.get_state(self._state)[self.selected_unit].move(new_x, new_y)
-        self.draw()
-        self.export("new.txt")
-        self.load_from_file("new.txt")
+        if(self.edit):
+            pos = self.mapToScene(event.pos())
+            new_x = (pos.x()/(self.zoom_level*self.unit_size))-10
+            new_y = (pos.y()/(self.zoom_level*self.unit_size))-10
+            self.simulation.get_state(self._state)[self.selected_unit].move(new_x, new_y)
+            self.draw()
+            self.wait_mode_on()
+            self.export("new.txt")
+            self.wait_mode_off()
+            self.load_from_file("new.txt")
+
+    def change_mod(self):
+        self.edit = not(self.edit)
 
     def gen_color(self, index, unit):
         """
@@ -135,6 +145,14 @@ class Battlefield(QGraphicsView):
                 color = self.gen_color(self.colormap, unit)
                 unit.draw(self.scene, self.unit_size, self.zoom_level, color[unit.side])
         self.simulation.get_state(self._state)[self.selected_unit].draw(self.scene, self.unit_size, self.zoom_level, QColor(0, 255, 0))
+
+    def wait_mode_on(self):
+        self.wait = True
+        self.scene.addRect(0,0, int(self.background.width()*(1+self.zoom_level)), int(self.background.height()*(1+self.zoom_level)), QPen(), QBrush(QColor(255, 255, 255)))
+
+    def wait_mode_off(self):
+        self.wait = False
+        self.draw()
 
     def export(self, name):
         """To export the current state"""
