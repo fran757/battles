@@ -27,6 +27,7 @@ class Battlefield(QGraphicsView):
 
         self.mousePressEvent = self.on_mousePressEvent
         self.mouseMoveEvent = self.on_mouseMoveEvent
+        self.mouseReleaseEvent = self.on_mouseReleaseEvent
 
         self.setGeometry(300, 300, self.grid_size*10, self.grid_size*10)
         self.setScene(self.scene)
@@ -107,6 +108,13 @@ class Battlefield(QGraphicsView):
                            self.unit_size,
                            QPen(), QBrush(QColor(0, 255, 0, 125)))
         QTest.qWait(10)
+
+    def on_mouseReleaseEvent(self, event):
+        pos = self.mapToScene(event.pos())
+        new_x = (pos.x()/(self.zoom_level*self.unit_size))-10
+        new_y = (pos.y()/(self.zoom_level*self.unit_size))-10
+        self.simulation.get_state(self._state)[self.selected_unit].move(new_x, new_y)
+        self.draw()
 
     def gen_color(self, index, unit):
         """
