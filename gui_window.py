@@ -77,7 +77,7 @@ class MainWindow(QWidget):
 
         self.setLayout(layout)
 
-        self.menu.loading.connect(self.battlefield.load_from_file)
+        self.menu.loading.connect(self.load_from_file)
         self.menu.saving.connect(self.battlefield.export)
         self.buttons.click.connect(self.update)
         self.buttons.pause.connect(self.play_pause)
@@ -87,7 +87,7 @@ class MainWindow(QWidget):
         self.battlefield.click.connect(self.change_selected_unit)
         self.info.mod_checked.connect(self.battlefield.change_mod)
         self.info.simu_checked.connect(self.battlefield.change_simu)
-        self.info.generate.connect(self.battlefield.instant_export)
+        self.info.generate.connect(self.instant_export)
 
         self.setGeometry(300, 300, self.battlefield.width()+110,
                          self.battlefield.height())
@@ -96,6 +96,14 @@ class MainWindow(QWidget):
     def change_selected_unit(self, unit_index: int):
         self.selected_unit = unit_index
         self.info.change_unit(self.battlefield.get_unit(self.selected_unit))
+
+    def instant_export(self):
+        self.battlefield.instant_export()
+        self.slide.setMaximum(self.battlefield.size)
+
+    def load_from_file(self, path: str):
+        self.battlefield.load_from_file(path)
+        self.slide.setMaximum(self.battlefield.size)
 
     def update(self, step_state: int):
         """
