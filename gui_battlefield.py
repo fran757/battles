@@ -3,7 +3,6 @@ from PyQt5.QtWidgets import QWidget, QGraphicsView, QGraphicsScene
 from PyQt5.QtGui import QPen, QColor, QBrush
 from simulate import Simulation
 
-
 class Battlefield(QGraphicsView):
     """The graphical battlefield"""
 

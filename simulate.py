@@ -12,7 +12,8 @@ class Simulation:
         with open(file_name, 'r') as file:
             lines = [line.rstrip().split(' ') for line in file.readlines()]
             self.states = []
-            i = 0
+            self.strat = [lines[0][1], lines[1][1]]
+            i = 2
             while i < len(lines):
                 units = []
                 size = int(lines[i][0])
@@ -59,6 +60,8 @@ def make_simulation(battle: Battle, file_name: str):
     state = 0
     # In order to erase the content of the file
     with open(file_name, 'w') as file:
+        file.write("0 health=1 \n")
+        file.write("1 distance=1 \n")
         file.close()
     while not battle.is_finished() and state<100:
         state += 1
