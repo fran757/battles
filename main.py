@@ -23,7 +23,7 @@ if __name__ == "__main__":
         make_simulation(prepare_battle(), "save.txt")
         print("done !")
     if not "-a" in sys.argv:
-        window = MainWindow(Simulation("save.txt"))
+        window = MainWindow("save.txt")
         sys.exit(APP.exec_())
 
     clock_report()

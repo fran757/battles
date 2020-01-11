@@ -10,13 +10,11 @@ class Battlefield(QGraphicsView):
 
     click = pyqtSignal(int)
 
-    def __init__(self, simulation: Simulation):
+    def __init__(self, path: str):
         super().__init__()
 
+        self.load_from_file(path)
         self.possible_colors = {"health": 0, "strength": 1, "braveness": 2}
-        self.simulation = simulation
-        self._state = 0
-        self._size = self.simulation.size
         self.unit_size = 10
         self.scene = QGraphicsScene()
         self.grid_size = 50
@@ -35,11 +33,9 @@ class Battlefield(QGraphicsView):
         self.draw()
 
     def load_from_file(self, path: str):
-        """
-        To load a simulation from a file
-        """
         self.simulation = Simulation(path)
         self._state = 0
+        self._size = self.simulation.size
 
     def update(self, state_step: int):
         """Update the graphics and the grid between two steps."""
@@ -115,6 +111,8 @@ class Battlefield(QGraphicsView):
         new_y = (pos.y()/(self.zoom_level*self.unit_size))-10
         self.simulation.get_state(self._state)[self.selected_unit].move(new_x, new_y)
         self.draw()
+        self.export("new.txt")
+        self.load_from_file("new.txt")
 
     def gen_color(self, index, unit):
         """
@@ -137,3 +135,7 @@ class Battlefield(QGraphicsView):
                 color = self.gen_color(self.colormap, unit)
                 unit.draw(self.scene, self.unit_size, self.zoom_level, color[unit.side])
         self.simulation.get_state(self._state)[self.selected_unit].draw(self.scene, self.unit_size, self.zoom_level, QColor(0, 255, 0))
+
+    def export(self, name):
+        """To export the current state"""
+        self.simulation.export(self.state, name)

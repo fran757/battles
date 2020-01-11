@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from PyQt5.QtGui import QPen, QColor, QBrush
+from PyQt5.QtCore import pyqtSignal, QObject
 from battle import Battle
 from unit import Unit
 from decide import strategy
@@ -15,6 +16,10 @@ class GraphicUnit:
     strength: int
     braveness: int
     is_centurion: bool
+    reach: float
+    speed: int
+    is_dead: bool
+    is_fleeing: bool
 
     def specs(self):
         return [self.health, self.strength, self.braveness]
@@ -39,16 +44,19 @@ class GraphicUnit:
         self.y = new_y
 
 
-class Simulation:
+class Simulation(QObject):
     """
     A simple class to load a simulation from a file
     """
+    started = pyqtSignal()
+    finished = pyqtSignal()
 
     def __init__(self, file_name):
+        super().__init__()
         with open(file_name, 'r') as file:
             lines = [line.rstrip().split(' ') for line in file.readlines()]
             self.states = []
-            self.strat = [lines[0][1], lines[1][1]]
+            self.strat = [[int(lines[0][0]), int(lines[0][1])], [int(lines[1][0]), int(lines[1][1])]]
             i = 2
             while i < len(lines):
                 units = []
@@ -60,7 +68,11 @@ class Simulation:
                                              int(lines[i+j][3]),
                                              int(lines[i+j][4]),
                                              int(lines[i+j][5]),
-                                             bool(int(lines[i+j][6]))))
+                                             bool(int(lines[i+j][6])),
+                                             float(lines[i+j][7]),
+                                             int(lines[i+j][8]),
+                                             bool(int(lines[i+j][9])),
+                                             bool(int(lines[i+j][10]))))
                 self.states.append(units)
                 i += size + 1
         self._size = len(self.states)
@@ -74,6 +86,29 @@ class Simulation:
     @property
     def size(self):
         return self._size
+
+    def export(self, state, name):
+        """
+        To regenerate a simulation file from a state in Simulation
+        """
+        self.started.emit()
+        print("Generating new simulation...")
+        battle = Battle()
+        graph_units = self.get_state(state)
+        strats = [strategy(health=st[0], distance=st[1]) for st in self.strat]
+        for gunit in graph_units:
+            battle.units.append(Unit(gunit.side,
+                                     np.array((gunit.x, gunit.y), float),
+                                     strats[gunit.side],
+                                     gunit.health, gunit.strength,
+                                     gunit.braveness,
+                                     gunit.reach, gunit.speed,
+                                     gunit.is_dead, gunit.is_fleeing,
+                                     gunit.is_centurion))
+        make_simulation(battle, name)
+        self.finished.emit()
+        print("... Done !")
+
 
 
 def prepare_battle():
@@ -100,8 +135,8 @@ def make_simulation(battle: Battle, file_name: str):
     state = 0
     # In order to erase the content of the file
     with open(file_name, 'w') as file:
-        file.write("0 health=1 \n")
-        file.write("1 distance=1 \n")
+        file.write("1 0 \n") #arguments for strategy, health and distance, in the order of sides, to improve
+        file.write("0 1 \n")
         file.close()
     while not battle.is_finished() and state < 100:
         state += 1

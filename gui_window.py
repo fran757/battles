@@ -11,21 +11,30 @@ class MainMenu(QMenuBar):
     """
     The menubar for the mainwindow
     """
-    load = pyqtSignal(str)
+    loading = pyqtSignal(str)
+    saving = pyqtSignal(str)
 
     def __init__(self):
         super().__init__()
         self.file = self.addMenu("File")
-        self.file.addAction("Load")
-        self.file.triggered[QAction].connect(self.get_path)
+        self.loadAction = QAction("Load")
+        self.saveAction = QAction("Generate new from now")
 
-    def get_path(self):
-        """
-        To open a filedialog in order to get the path to a new simulation
-        """
-        filename = QFileDialog.getOpenFileName(self, 'Open file',
+        self.file.addAction(self.loadAction)
+        self.file.addAction(self.saveAction)
+
+        self.loadAction.triggered.connect(self.load)
+        self.saveAction.triggered.connect(self.save)
+
+    def load(self):
+        name = QFileDialog.getOpenFileName(self, 'Open file',
                                                os.path.dirname(os.path.abspath(__file__)), "Game files (*.txt)")
-        self.load.emit(filename[0])
+        self.loading.emit(name[0])
+
+    def save(self):
+        name = QFileDialog.getSaveFileName(self, 'Save file',
+                                               os.path.dirname(os.path.abspath(__file__)), "Game files (*.txt)")
+        self.saving.emit(name[0])
 
 
 class MainWindow(QWidget):
@@ -33,7 +42,7 @@ class MainWindow(QWidget):
     The main window of the program
     """
 
-    def __init__(self, simulation):
+    def __init__(self, path: str):
         super().__init__()
 
         colormaps = ["health", "strength", "braveness"]
@@ -42,7 +51,7 @@ class MainWindow(QWidget):
         self.message = QLabel("Welcome !")
         self.buttons = ActionButtons()
         self.slide = QSlider(Qt.Horizontal)
-        self.battlefield = Battlefield(simulation)
+        self.battlefield = Battlefield(path)
         self.info = InfoBox(self.battlefield.get_unit(0))
         self.select = QComboBox()
         self.select.addItems(colormaps)
@@ -68,7 +77,8 @@ class MainWindow(QWidget):
 
         self.setLayout(layout)
 
-        self.menu.load.connect(self.battlefield.load_from_file)
+        self.menu.loading.connect(self.battlefield.load_from_file)
+        self.menu.saving.connect(self.battlefield.export)
         self.buttons.click.connect(self.update)
         self.buttons.pause.connect(self.play_pause)
         self.buttons.zoom_io.connect(self.battlefield.zoom)
