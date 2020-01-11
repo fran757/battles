@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from PyQt5.QtGui import QPen, QColor, QBrush
 from battle import Battle
 from unit import Unit
 from decide import strategy
@@ -17,6 +18,21 @@ class GraphicUnit:
 
     def specs(self):
         return [self.health, self.strength, self.braveness]
+
+    def is_here(self, clicked_x, clicked_y, unit_size, zoom_level):
+        i, j = (self.x+10)*unit_size*zoom_level, (self.y+10)*unit_size*zoom_level
+        if (i <= clicked_x <= i+unit_size) and (j <= clicked_y <= j+unit_size):
+            return True
+        else:
+            return False
+
+    def draw(self, scene, unit_size, zoom_level, color: QColor):
+        i, j = self.x+10, self.y+10
+        scene.addRect(i*unit_size*zoom_level,
+                      j*unit_size*zoom_level,
+                      unit_size,
+                      unit_size,
+                      QPen(), QBrush(color))
 
 
 class Simulation:

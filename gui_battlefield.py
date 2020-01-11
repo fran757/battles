@@ -7,8 +7,11 @@ from simulate import Simulation
 class Battlefield(QGraphicsView):
     """The graphical battlefield"""
 
+    click = pyqtSignal(int)
+
     def __init__(self, simulation: Simulation):
         super().__init__()
+
         self.possible_colors = {"health": 0, "strength": 1, "braveness": 2}
         self.simulation = simulation
         self._state = 0
@@ -16,11 +19,12 @@ class Battlefield(QGraphicsView):
         self.unit_size = 10
         self.scene = QGraphicsScene()
         self.grid_size = 50
-        self.colormap = "health"
-
+        self.colormap = 0
         self.background = QPixmap("fond.png")
-
         self.zoom_level = 1
+        self.selected_unit = 0
+
+        self.mousePressEvent = self.on_mousePressEvent
 
         self.setGeometry(300, 300, self.grid_size*10, self.grid_size*10)
         self.setScene(self.scene)
@@ -56,6 +60,12 @@ class Battlefield(QGraphicsView):
         self.resetCachedContent()
         self.draw()
 
+    def get_unit(self, index: int):
+        """
+        To get a specific unit specs
+        """
+        return self.simulation.get_state(self._state)[index]
+
     @property
     def size(self):
         """
@@ -75,8 +85,19 @@ class Battlefield(QGraphicsView):
         To change the colormap
         """
         if(color in self.possible_colors):
-            self.colormap = color
+            self.colormap = self.possible_colors[color]
             self.draw()
+
+    def on_mousePressEvent(self, event):
+        pos = self.mapToScene(event.pos())
+        print(pos.x())
+        sim = self.simulation.get_state(self.state)
+        for i in range(len(sim)):
+            if sim[i].is_here(pos.x(), pos.y(), self.unit_size, self.zoom_level):
+                self.click.emit(i)
+                self.selected_unit = i
+                self.draw()
+
 
     def gen_color(self, index, unit):
         """
@@ -96,9 +117,6 @@ class Battlefield(QGraphicsView):
         for unit in self.simulation.get_state(self._state):
             if not unit.health == 0:
                 i, j = [unit.x+10, unit.y+10]
-                color = self.gen_color(self.possible_colors[self.colormap], unit)
-                self.scene.addRect(i*self.unit_size*self.zoom_level,
-                                   j*self.unit_size*self.zoom_level,
-                                   self.unit_size,
-                                   self.unit_size,
-                                   QPen(), QBrush(color[unit.side]))
+                color = self.gen_color(self.colormap, unit)
+                unit.draw(self.scene, self.unit_size, self.zoom_level, color[unit.side])
+        self.simulation.get_state(self._state)[self.selected_unit].draw(self.scene, self.unit_size, self.zoom_level, QColor(0, 255, 0))

@@ -1,5 +1,6 @@
 from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtWidgets import QWidget, QPushButton, QHBoxLayout
+from PyQt5.QtWidgets import QWidget, QPushButton, QHBoxLayout, QVBoxLayout, QLabel
+from simulate import GraphicUnit
 
 
 class Button(QPushButton):
@@ -71,3 +72,34 @@ class ActionButtons(QWidget):
         """
         sender = self.sender()
         self.zoom_io.emit(sender.value)
+
+
+class InfoBox(QWidget):
+    """
+    To display infos on a unit
+    """
+    def __init__(self, unit: GraphicUnit):
+        super().__init__()
+        self.unit = unit
+        layout = QVBoxLayout()
+
+        self.side = QLabel("side: "+str(self.unit.side))
+        self.health = QLabel("health: "+str(self.unit.health))
+        self.strength = QLabel("strength: "+str(self.unit.strength))
+        self.braveness = QLabel("braveness: "+str(self.unit.braveness))
+        self.centurion = QLabel("centurion: "+str(self.unit.is_centurion))
+
+        layout.addWidget(self.side)
+        layout.addWidget(self.health)
+        layout.addWidget(self.strength)
+        layout.addWidget(self.braveness)
+
+        self.setLayout(layout)
+
+    def change_unit(self, unit: GraphicUnit):
+        self.unit = unit
+        self.side.setText("side: "+str(self.unit.side))
+        self.health.setText("health: "+str(self.unit.health))
+        self.strength.setText("strength: "+str(self.unit.strength))
+        self.braveness.setText("braveness: "+str(self.unit.braveness))
+        self.centurion.setText("centurion: "+str(self.unit.is_centurion))

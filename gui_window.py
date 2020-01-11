@@ -1,8 +1,8 @@
 from PyQt5.QtCore import pyqtSignal, pyqtSlot, Qt
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QMenuBar, QMainWindow, QSlider
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QMenuBar, QMainWindow, QSlider
 from PyQt5.QtWidgets import QMenu, QAction, QFileDialog, QLabel, QComboBox
 from PyQt5.QtTest import QTest
-from gui_buttons import ActionButtons
+from gui_buttons import ActionButtons, InfoBox
 from gui_battlefield import Battlefield
 import os
 
@@ -38,10 +38,12 @@ class MainWindow(QWidget):
 
         colormaps = ["health", "strength", "braveness"]
         layout = QVBoxLayout()
+        self.selected_unit = 0
         self.message = QLabel("Welcome !")
         self.buttons = ActionButtons()
         self.slide = QSlider(Qt.Horizontal)
         self.battlefield = Battlefield(simulation)
+        self.info = InfoBox(self.battlefield.get_unit(0))
         self.select = QComboBox()
         self.select.addItems(colormaps)
 
@@ -54,7 +56,12 @@ class MainWindow(QWidget):
 
         layout.addWidget(self.menu)
         layout.addWidget(self.select)
-        layout.addWidget(self.battlefield)
+
+        second_layout = QHBoxLayout()
+        second_layout.addWidget(self.battlefield)
+        second_layout.addWidget(self.info)
+
+        layout.addLayout(second_layout)
         layout.addWidget(self.buttons)
         layout.addWidget(self.slide)
         layout.addWidget(self.message)
@@ -67,10 +74,15 @@ class MainWindow(QWidget):
         self.buttons.zoom_io.connect(self.battlefield.zoom)
         self.select.activated[str].connect(self.battlefield.change_colormap)
         self.slide.valueChanged.connect(self.valuechange)
+        self.battlefield.click.connect(self.change_selected_unit)
 
-        self.setGeometry(300, 300, self.battlefield.width()+30,
+        self.setGeometry(300, 300, self.battlefield.width()+110,
                          self.battlefield.height())
         self.show()
+
+    def change_selected_unit(self, unit_index: int):
+        self.selected_unit = unit_index
+        self.info.change_unit(self.battlefield.get_unit(self.selected_unit))
 
     def update(self, step_state: int):
         """
@@ -80,12 +92,14 @@ class MainWindow(QWidget):
         self.message.setText(
             "step "+str(self.battlefield.state+1)+"/"+str(self.battlefield.size))
         self.slide.setValue(self.slide.value() + step_state)
+        self.info.change_unit(self.battlefield.get_unit(self.selected_unit))
 
     def valuechange(self):
         """
         To move in the simulation
         """
         self.battlefield.go_to_state(self.slide.value())
+        self.info.change_unit(self.battlefield.get_unit(self.selected_unit))
         self.message.setText(
             "step "+str(self.battlefield.state+1)+"/"+str(self.battlefield.size))
 
