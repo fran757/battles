@@ -18,6 +18,8 @@ class Battlefield(QGraphicsView):
         self.grid_size = 50
         self.colormap = "health"
 
+        self.background = QPixmap("fond.png")
+
         self.zoom_level = 1
 
         self.setGeometry(300, 300, self.grid_size*10, self.grid_size*10)
@@ -88,7 +90,8 @@ class Battlefield(QGraphicsView):
         """Draw the units."""
         self.scene.clear()
         # self.scene.addRect(-100, -100, 500, 500, QPen(), QBrush(QColor(255, 255, 255)))
-        self.scene.addPixmap(QPixmap("fond.png"))
+        self.scene.addPixmap(self.background.scaled(int(self.background.width()*(1+self.zoom_level)),
+                                                    int(self.background.height()*(1+self.zoom_level))))
         # shuffle so that we also see blue units
         for unit in self.simulation.get_state(self._state):
             if unit[3] != 0:
