@@ -1,13 +1,15 @@
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QWidget, QGraphicsView, QGraphicsScene
-from PyQt5.QtGui import QPen, QColor, QBrush
+from PyQt5.QtGui import QPen, QColor, QBrush, QPixmap
 from simulate import Simulation
+
 
 class Battlefield(QGraphicsView):
     """The graphical battlefield"""
 
     def __init__(self, simulation: Simulation):
         super().__init__()
+        self.possible_colors = {"health": 3, "strength": 4, "braveness": 5}
         self.simulation = simulation
         self._state = 0
         self._size = self.simulation.size
@@ -52,13 +54,6 @@ class Battlefield(QGraphicsView):
         self.resetCachedContent()
         self.draw()
 
-    def move(self, x_axis: int, y_axis: int):
-        """
-        To move the camera on the scene
-        """
-        self.camera[0] += x_axis
-        self.camera[1] += y_axis
-
     @property
     def size(self):
         """
@@ -77,8 +72,9 @@ class Battlefield(QGraphicsView):
         """
         To change the colormap
         """
-        self.colormap = color
-        self.draw()
+        if(color in self.possible_colors):
+            self.colormap = color
+            self.draw()
 
     def gen_color(self, index, unit):
         """
@@ -91,16 +87,13 @@ class Battlefield(QGraphicsView):
     def draw(self):
         """Draw the units."""
         self.scene.clear()
+        # self.scene.addRect(-100, -100, 500, 500, QPen(), QBrush(QColor(255, 255, 255)))
+        self.scene.addPixmap(QPixmap("fond.png"))
         # shuffle so that we also see blue units
         for unit in self.simulation.get_state(self._state):
             if unit[3] != 0:
-                i, j = [unit[1], unit[2]]
-                if self.colormap == "health":
-                    color = self.gen_color(3, unit)
-                elif self.colormap == "strength":
-                    color = self.gen_color(4, unit)
-                elif self.colormap == "braveness":
-                    color = self.gen_color(5, unit)
+                i, j = [unit[1]+10, unit[2]+10]
+                color = self.gen_color(self.possible_colors[self.colormap], unit)
                 self.scene.addRect(i*self.unit_size*self.zoom_level,
                                    j*self.unit_size*self.zoom_level,
                                    self.unit_size,
