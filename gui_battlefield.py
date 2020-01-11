@@ -1,7 +1,8 @@
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QWidget, QGraphicsView, QGraphicsScene
 from PyQt5.QtGui import QPen, QColor, QBrush, QPixmap
-from simulate import Simulation
+from PyQt5.QtTest import QTest
+from simulate import Simulation, GraphicUnit
 
 
 class Battlefield(QGraphicsView):
@@ -25,6 +26,7 @@ class Battlefield(QGraphicsView):
         self.selected_unit = 0
 
         self.mousePressEvent = self.on_mousePressEvent
+        self.mouseMoveEvent = self.on_mouseMoveEvent
 
         self.setGeometry(300, 300, self.grid_size*10, self.grid_size*10)
         self.setScene(self.scene)
@@ -90,7 +92,6 @@ class Battlefield(QGraphicsView):
 
     def on_mousePressEvent(self, event):
         pos = self.mapToScene(event.pos())
-        print(pos.x())
         sim = self.simulation.get_state(self.state)
         for i in range(len(sim)):
             if sim[i].is_here(pos.x(), pos.y(), self.unit_size, self.zoom_level):
@@ -98,6 +99,14 @@ class Battlefield(QGraphicsView):
                 self.selected_unit = i
                 self.draw()
 
+    def on_mouseMoveEvent(self, event):
+        self.draw()
+        pos = self.mapToScene(event.pos())
+        self.scene.addRect(pos.x(), pos.y(),
+                           self.unit_size,
+                           self.unit_size,
+                           QPen(), QBrush(QColor(0, 255, 0, 125)))
+        QTest.qWait(10)
 
     def gen_color(self, index, unit):
         """
