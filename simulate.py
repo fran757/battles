@@ -23,6 +23,11 @@ class GraphicUnit:
     def specs(self):
         return [self.health, self.strength, self.braveness]
 
+    def set_specs(self, new_specs: list):
+        self.health = new_specs[0]
+        self.strength = new_specs[1]
+        self.braveness = new_specs[2]
+
     def is_here(self, clicked_x, clicked_y, unit_size, zoom_level):
         i, j = (self.x+10)*unit_size*zoom_level, (self.y+10)*unit_size*zoom_level
         if (i <= clicked_x <= i+unit_size) and (j <= clicked_y <= j+unit_size):

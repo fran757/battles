@@ -88,6 +88,7 @@ class MainWindow(QWidget):
         self.info.mod_checked.connect(self.battlefield.change_mod)
         self.info.simu_checked.connect(self.battlefield.change_simu)
         self.info.generate.connect(self.instant_export)
+        self.info.save_specs.connect(self.change_specs)
 
         self.setGeometry(300, 300, self.battlefield.width()+110,
                          self.battlefield.height())
@@ -96,6 +97,9 @@ class MainWindow(QWidget):
     def change_selected_unit(self, unit_index: int):
         self.selected_unit = unit_index
         self.info.change_unit(self.battlefield.get_unit(self.selected_unit))
+
+    def change_specs(self, new_specs):
+        self.battlefield.get_unit(self.selected_unit).set_specs(new_specs)
 
     def instant_export(self):
         self.battlefield.instant_export()
