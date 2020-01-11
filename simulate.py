@@ -1,13 +1,29 @@
+from dataclasses import dataclass
 from battle import Battle
 from unit import Unit
 from decide import strategy
 import numpy as np
 
 
+@dataclass
+class GraphicUnit:
+    side: int
+    x: float
+    y: float
+    health: int
+    strength: int
+    braveness: int
+    is_centurion: bool
+
+    def specs(self):
+        return [self.health, self.strength, self.braveness]
+
+
 class Simulation:
     """
     A simple class to load a simulation from a file
     """
+
     def __init__(self, file_name):
         with open(file_name, 'r') as file:
             lines = [line.rstrip().split(' ') for line in file.readlines()]
@@ -18,13 +34,13 @@ class Simulation:
                 units = []
                 size = int(lines[i][0])
                 for j in range(1, size+1):
-                    units.append([int(lines[i+j][0]),
-                                  float(lines[i+j][1]),
-                                  float(lines[i+j][2]),
-                                  int(lines[i+j][3]),
-                                  int(lines[i+j][4]),
-                                  int(lines[i+j][5]),
-                                  bool(int(lines[i+j][6]))])
+                    units.append(GraphicUnit(int(lines[i+j][0]),
+                                             float(lines[i+j][1]),
+                                             float(lines[i+j][2]),
+                                             int(lines[i+j][3]),
+                                             int(lines[i+j][4]),
+                                             int(lines[i+j][5]),
+                                             bool(int(lines[i+j][6]))))
                 self.states.append(units)
                 i += size + 1
         self._size = len(self.states)
@@ -39,6 +55,7 @@ class Simulation:
     def size(self):
         return self._size
 
+
 def prepare_battle():
     """Battle with several lines on each side.
     Just play around with army size, position...
@@ -50,8 +67,10 @@ def prepare_battle():
             closest = strategy(distance=1)
             battle.units.append(Unit(0, np.array((i, j), float), closest))
             battle.units.append(Unit(1, np.array((30 - i, j), float), weakest))
-    battle.units.append(Unit(0, np.array((10, 5), float), closest, 1000, 100, 100, 1.5, 1, False, False, True))
-    battle.units.append(Unit(1, np.array((20, 5), float), closest, 1000, 100, 100, 1.5, 1, False, False, True))
+    battle.units.append(Unit(0, np.array((10, 5), float),
+                        closest, 1000, 100, 100, 1.5, 1, False, False, True))
+    battle.units.append(Unit(1, np.array((20, 5), float),
+                        closest, 1000, 100, 100, 1.5, 1, False, False, True))
 
     return battle
 
@@ -64,7 +83,7 @@ def make_simulation(battle: Battle, file_name: str):
         file.write("0 health=1 \n")
         file.write("1 distance=1 \n")
         file.close()
-    while not battle.is_finished() and state<100:
+    while not battle.is_finished() and state < 100:
         state += 1
         battle.update()
         battle.export_state(file_name)
