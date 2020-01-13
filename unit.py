@@ -54,12 +54,17 @@ class Unit:
     def reset_braveness(self):
         """Resets braveness to its initial value"""
         self.braveness = 100
+        self.time_fleeing = 0
 
     @delay
     def moral_damage(self, value):
         """Decreases braveness by value"""
         self.braveness -= value
-
+    
+    @delay
+    def moral_update(self, value):
+        """Increases braveness by value"""
+        self.braveness += value
     @delay
     def attack(self, target):
         """Inflict damage according to own strength."""
