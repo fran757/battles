@@ -1,31 +1,38 @@
-class Cache:
-    """Map function return to arguments.
-    Save time on function execution.
-    """
+from inspect import signature
 
-    _known = {}
+from .tool import Tool
 
-    def __init__(self, fun):
-        self.wrapped = fun
-        self.records = {}
 
-    def __call__(self, value):
-        # todo: type consistency (+ include type in name ?)
-        name = id(value)
-        if name not in self.records:
-            self.records[name] = self.wrapped(value)
-        return self.records[name]
+class Cache(metaclass=Tool):
+    def __init__(self):
+        self._records = {}
+
+    def __setitem__(self, key, value):
+        self._records[key] = value
+
+    def __getitem__(self, arg):
+        key = id(arg)
+        if not key in self._records:
+            raise KeyError
+        return self._records[key]
+
+    def __setitem__(self, arg, value):
+        self._records[id(arg)] = value
 
     @classmethod
     def reset(cls):
-        """Reset caches (when function return is assumed to have changed)."""
         for instance in cls._known.values():
-            instance.records = {}
+            instance.records = []
 
 
 def cache(fun):
-    """Provide cache for function."""
-    name = fun.__name__
-    if name not in Cache._known:
-        Cache._known[name] = Cache(fun)
-    return Cache._known[name]
+    def cached(*args):
+        key = [a for n, a in zip(signature(fun).parameters, args) if n != "self"][0]
+        try:
+            return Cache[fun][key]
+        except KeyError:
+            value = fun(*args)
+            Cache[fun][key] = value
+            return value
+    return cached
+
