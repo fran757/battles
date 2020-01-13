@@ -21,7 +21,7 @@ class Unit:
     coords: np.ndarray  # where the unit is (float)
     strategy: Callable = delay(lambda *args: None)  # decision taking
     _health: int = 5  # health remaining
-    _strength: int = 4  # how much damage inflicted through attacks
+    strength: int = 4  # how much damage inflicted through attacks
     _braveness: int = 100 # braveness of the unit
     reach: int = 1.5  # how far damage can be dealt
     speed: int = 1  # how far the unit can go at a time
@@ -49,11 +49,6 @@ class Unit:
         """If health falls to 0, unit is dead."""
         self._health = max(value, 0)
         self.is_dead = self._health == 0
-
-    @property
-    def strength(self):
-        """Returns real strength of the unit"""
-        return self._strength
 
     @delay
     def reset_braveness(self):

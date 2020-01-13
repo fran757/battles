@@ -71,12 +71,11 @@ def burst_of_braveness(unit):
     if p < 0.1:
         unit.reset_braveness()
         unit.speed = 2**unit.speed
-        unit._strength = 2*unit._strength
+        unit.strength *= 2
 
 
 def moral_damage(unit, allies, enemies, search_result):
-    """Units take moral damage at every step,
-    their braveness decreases"""
+    """Units take moral damage at every step, their braveness decreases."""
     if unit.braveness == 0:
         burst_of_braveness(unit)
         unit.time_fleeing += 1
