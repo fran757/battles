@@ -66,11 +66,22 @@ def is_close_from_centurion(unit, centurion, threshold):
     return False
 
 
+def burst_of_braveness(unit):
+    p = random.random()
+    if p < 0.1:
+        unit.reset_braveness()
+        unit.speed = 2**unit.speed
+        unit._strength = 2*unit._strength
+
+
 def moral_damage(unit, allies, enemies, search_result):
     """Units take moral damage at every step,
     their braveness decreases"""
     if unit.braveness == 0:
-        return
+        burst_of_braveness(unit)
+        unit.time_fleeing += 1
+        if unit.time_fleeing == 5:
+            unit.health = 0
 
     @cache
     def distance_to_enemies(_unit):
@@ -88,31 +99,20 @@ def moral_damage(unit, allies, enemies, search_result):
 
 def do_something(unit, target, enemies):
     if unit.braveness == 0:
-        direction1 = -1 + 2*random.random()
-        direction2 = -1 + 2*random.random()
-        return unit.move([direction1, direction2])
+        @cache
+        def barycenter(enemies):
+            """finding barycenter of enemy units"""
+            nb_enemies = len(enemies)
+            x_bar = (1/nb_enemies)*sum(enemy.coords[0] for enemy in enemies)
+            y_bar = (1/nb_enemies)*sum(enemy.coords[1] for enemy in enemies)
+            return [x_bar, y_bar]
+        dir_to_bar = (barycenter(enemies)-unit.coords) / \
+            LA.norm(barycenter(enemies)-unit.coords)
+        return unit.move(-dir_to_bar)
     else:
         if distance_from(unit)(target) <= unit.reach:
             return unit.attack(target)
         return unit.move(direction(unit, target))
-
-
-"""        @cache
-        def closest_enemy(_unit):
-            # finding an enemy not over unit
-            k = 0
-            _closest_enemy = enemies[k]
-            while LA.norm(_closest_enemy.coords - unit.coords) == 0:
-                k += 1
-                _closest_enemy = enemies[k]
-            for enemy in enemies[k+1:]:
-                if distance_from(_unit)(enemy) < distance_from(_unit)(_closest_enemy):
-                    if (enemy.coords != unit.coords).any() and not enemy.is_dead:
-                        _closest_enemy = enemy
-                return _closest_enemy
-        enemy_to_flee = closest_enemy(unit)
-        return unit.move(-direction(unit, enemy_to_flee))
-"""
 
 
 def strategy(distance=0, health=0):

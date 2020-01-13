@@ -27,6 +27,7 @@ class Unit:
     speed: int = 1  # how far the unit can go at a time
     is_dead: bool = False
     is_fleeing: bool = False
+    time_fleeing: int = 0
     is_centurion: bool = False
 
     @property
@@ -74,13 +75,6 @@ class Unit:
     def move(self, direction):
         """Move according to own speed."""
         self.coords += self.speed * direction
-
-    @delay
-    def flee(self, fleeing_prob):
-        """Cowards flee from this unit."""
-        rand_value = random.random()
-        if rand_value < fleeing_prob:
-            self._health *= 0.4  # 40% health loss
 
     def decide(self, others):
         """Take decision according to own strategy."""
