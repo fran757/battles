@@ -1,3 +1,4 @@
+from functools import wraps
 from inspect import signature
 
 from .tool import Tool
@@ -26,6 +27,7 @@ class Cache(metaclass=Tool):
 
 
 def cache(fun):
+    @wraps(fun)
     def cached(*args):
         key = [a for n, a in zip(signature(fun).parameters, args) if n != "self"][0]
         try:

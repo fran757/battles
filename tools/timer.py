@@ -1,3 +1,4 @@
+from functools import wraps
 from time import time
 
 from .tool import Tool
@@ -26,6 +27,7 @@ def clock(fun):
     Closure preserves method identity.
     """
 
+    @wraps(fun)
     def timed(*args, **kwargs):
         before = time()
         value = fun(*args, **kwargs)

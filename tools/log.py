@@ -1,3 +1,4 @@
+from functools import wraps
 from inspect import signature
 
 from .tool import Tool
@@ -23,6 +24,7 @@ class Logger(metaclass=Tool):
 
 def log(message):
     def wrapper(fun):
+        @wraps(fun)
         def wrapped(*args, **kwargs):
             formats = {n: v for n, v in zip(signature(fun).parameters, args)}
             formats.update(kwargs)
