@@ -5,7 +5,7 @@
 """
 from numpy import linalg as LA
 
-from tools.cache import cache
+from tools import tools
 from delay import delay
 
 import random
@@ -70,7 +70,7 @@ def burst_of_braveness(unit):
     p = random.random()
     if p < 0.1:
         unit.reset_braveness()
-        unit.speed = 2*unit.speed
+        unit.speed *= 2
         unit.strength *= 2
 
 
@@ -86,30 +86,34 @@ def moral_damage(unit, allies, enemies, search_result):
         centurion = search_result[1]
         if is_close_from_centurion(unit, centurion, 5):
             return unit.reset_braveness()
-    @cache
+
+    @tools(cache=True)
     def distance_to_enemies(_unit):
         return sum(distance_from(_unit)(enemy) for enemy in enemies)
+
     remote = distance_to_enemies(unit)
     remote_allies = [distance_to_enemies(ally) for ally in allies] + [remote]
-    sorted_remote_allies = sorted(remote_allies)
-    coeff = sorted_remote_allies.index(remote)/len(remote_allies)
-    m_1 = int(5*(1-3*coeff))
-    coeff_2 = len(allies)/len(enemies)
-    m_2 = int(5*((3/2)*coeff_2-1))
-    return unit.moral_update(m_1+m_2)
+    coeff = sorted(remote_allies).index(remote) / len(remote_allies)
+    m_1 = int(5 * (1 - 3 * coeff))
+    coeff_2 = len(allies) / len(enemies)
+    m_2 = int(5 * ((3 / 2) * coeff_2 - 1))
+    return unit.moral_update(m_1 + m_2)
 
 
 def do_something(unit, target, enemies):
     if unit.braveness == 0:
-        @cache
+
+        @tools(cache=True)
         def barycenter(enemies):
-            """finding barycenter of enemy units"""
+            """Find barycenter of enemy units."""
             nb_enemies = len(enemies)
-            x_bar = (1/nb_enemies)*sum(enemy.coords[0] for enemy in enemies)
-            y_bar = (1/nb_enemies)*sum(enemy.coords[1] for enemy in enemies)
+            x_bar = (1 / nb_enemies) * sum(enemy.coords[0] for enemy in enemies)
+            y_bar = (1 / nb_enemies) * sum(enemy.coords[1] for enemy in enemies)
             return [x_bar, y_bar]
-        dir_to_bar = (barycenter(enemies)-unit.coords) / \
-            LA.norm(barycenter(enemies)-unit.coords)
+
+        dir_to_bar = (barycenter(enemies) - unit.coords) / LA.norm(
+            barycenter(enemies) - unit.coords
+        )
         return unit.move(-dir_to_bar)
     else:
         if distance_from(unit)(target) <= unit.reach:
@@ -120,6 +124,7 @@ def do_something(unit, target, enemies):
 def strategy(distance=0, health=0):
     """Order are based on preference between proximity and weakness."""
 
+    @tools(clock=True)
     def order(unit, all_units):
         others = [unit for unit in all_units if not unit.is_dead]
         allies = list(filter(ally_of(unit), others))
@@ -133,7 +138,9 @@ def strategy(distance=0, health=0):
 
         target = sorted(enemies, key=criteria)[0]
 
-        return do_something(unit, target, enemies) + moral_damage(unit, allies, enemies, search_result)
+        return do_something(unit, target, enemies) + moral_damage(
+            unit, allies, enemies, search_result
+        )
 
     return order
 
