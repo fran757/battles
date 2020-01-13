@@ -3,7 +3,7 @@
        -> maybe change to instance method, or too much clutter ?
    Strategies and helpful methods
 """
-from numpy import linalg as LA
+import numpy as np
 
 from tools import tools
 from delay import delay
@@ -33,59 +33,54 @@ def distance_from(unit):
     """Filter distances."""
 
     def distance(other):
-        return LA.norm(other.coords - unit.coords)
+        return np.linalg.norm(other.coords - unit.coords)
 
     return distance
 
 
-def direction(unit, other):
-    """Orientation towards other unit."""
-    delta = other.coords - unit.coords
-    return delta / LA.norm(delta)
+def direction(unit, target):
+    """Orientation from unit towards given point."""
+    delta = target - unit.coords
+    return delta / np.linalg.norm(delta)
 
 
-def focus(unit, target):
+def focus(unit, enemies, criteria):
     """Focus on one specific enemy.
     If within reach attack, otherwise approach.
     """
+    target = sorted(enemies, key=criteria)[0]
+
     if distance_from(unit)(target) <= unit.reach:
         return unit.attack(target)
-    return unit.move(direction(unit, target))
+    return unit.move(direction(unit, target.coords))
 
 
 def find_centurion(allies):
+    """Find living centurion among allies, if present."""
     for ally in allies:
         if ally.is_centurion and not ally.is_dead:
-            return True, ally
-    return [False]
-
-
-def is_close_from_centurion(unit, centurion, threshold):
-    if LA.norm(unit.coords - centurion.coords) < threshold:
-        return True
-    return False
+            return ally
+    return None
 
 
 def burst_of_braveness(unit):
-    p = random.random()
-    if p < 0.1:
+    """Boost unit stats and restore braveness, under a certain probability."""
+    if random.random() < 0.1:
         unit.reset_braveness()
         unit.speed *= 2
         unit.strength *= 2
 
 
-def moral_damage(unit, allies, enemies, search_result):
-    """Units take moral damage at every step, their braveness decreases."""
+def moral_damage(unit, allies, enemies, centurion):
+    """Units take moral damage at every step, decreasing their braveness."""
     if unit.braveness == 0:
         burst_of_braveness(unit)
         unit.time_fleeing += 1
         if unit.time_fleeing == 5:
             unit.health = 0
 
-    if search_result[0]:  # there is a centurion
-        centurion = search_result[1]
-        if is_close_from_centurion(unit, centurion, 5):
-            return unit.reset_braveness()
+    if centurion is not None and distance_from(unit, centurion) < 5:
+        return unit.reset_braveness()
 
     @tools(cache=True)
     def distance_to_enemies(_unit):
@@ -100,25 +95,20 @@ def moral_damage(unit, allies, enemies, search_result):
     return unit.moral_update(m_1 + m_2)
 
 
-def do_something(unit, target, enemies):
+def flee(unit, enemies):
+    def barycenter(enemies):
+        """Find barycenter of enemy units."""
+        return [np.mean([e.coords[i] for e in enemies]) for i in (0, 1)]
+
+    dir_to_bar = direction(unit, barycenter(enemies))
+    return unit.move(-dir_to_bar)
+
+
+def do_something(unit, enemies, criteria):
     if unit.braveness == 0:
-
-        @tools(cache=True)
-        def barycenter(enemies):
-            """Find barycenter of enemy units."""
-            nb_enemies = len(enemies)
-            x_bar = (1 / nb_enemies) * sum(enemy.coords[0] for enemy in enemies)
-            y_bar = (1 / nb_enemies) * sum(enemy.coords[1] for enemy in enemies)
-            return [x_bar, y_bar]
-
-        dir_to_bar = (barycenter(enemies) - unit.coords) / LA.norm(
-            barycenter(enemies) - unit.coords
-        )
-        return unit.move(-dir_to_bar)
+        return flee(unit, enemies)
     else:
-        if distance_from(unit)(target) <= unit.reach:
-            return unit.attack(target)
-        return unit.move(direction(unit, target))
+        return focus(unit, enemies, criteria)
 
 
 def strategy(distance=0, health=0):
@@ -129,20 +119,18 @@ def strategy(distance=0, health=0):
         others = [unit for unit in all_units if not unit.is_dead]
         allies = list(filter(ally_of(unit), others))
         enemies = list(filter(enemy_of(unit), others))
-        search_result = find_centurion(allies)
+        centurion = find_centurion(allies)
         if not enemies or unit.is_dead:
             return delay(lambda: None)()
 
         def criteria(other):
-            return distance * distance_from(unit)(other) + health * other.health
+            close = distance * distance_from(unit)(other)
+            weak = health * other.health
+            return close + weak
 
-        target = sorted(enemies, key=criteria)[0]
 
-        return do_something(unit, target, enemies) + moral_damage(
-            unit, allies, enemies, search_result
-        )
+        action = do_something(unit, enemies, criteria)
+        moral = moral_damage(unit, allies, enemies, centurion)
+        return action + moral
 
     return order
-
-
-# todo: blocking, fleeing, teaming up...

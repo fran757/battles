@@ -1,29 +1,36 @@
 #!/usr/bin/env python3.7
 
-import numpy as np
-from PyQt5.QtWidgets import QApplication
-import json
-import sys
+"""Main, executable file for the project.
+By default, open the GUI to visualize and play around with the simulation.
+Options :
+    -a : do not launch GUI
+    -s : run the simulation
+"""
 
-from unit import Unit
-from battle import Battle
-from decide import strategy
+import sys
+from PyQt5.QtWidgets import QApplication
+
 from tools.timer import clock_report
 from tools.log import Logger
 from gui_window import MainWindow
-from simulate import prepare_battle, make_simulation, Simulation
+from simulate import prepare_battle, make_simulation
 
 
-if __name__ == "__main__":
+def main():
+    """Parse user input and start the simulation or launch GUI accordingly."""
     Logger.init("logs.txt")
 
-    APP = QApplication([])
+    app = QApplication([])
     if "-s" in sys.argv:
         print("generating simulation...")
         make_simulation(prepare_battle(), "save.txt")
         print("done !")
-    if not "-a" in sys.argv:
+    if "-a" not in sys.argv:
         window = MainWindow("save.txt")
-        sys.exit(APP.exec_())
+        sys.exit(app.exec_())
 
     clock_report()
+
+
+if __name__ == "__main__":
+    main()

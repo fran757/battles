@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from typing import Callable
-import random
+
 import numpy as np
 from colorama import Fore, Style
 
@@ -15,14 +15,12 @@ class Unit:
     Elementary actions (move, attack) as delayed orders.
     """
 
-    # todo : too many attributes ?
-
     side: int  # which side the unit is on (e.g. blue and red armies)
     coords: np.ndarray  # where the unit is (float)
     strategy: Callable = delay(lambda *args: None)  # decision taking
     _health: int = 5  # health remaining
     strength: int = 4  # how much damage inflicted through attacks
-    _braveness: int = 100 # braveness of the unit
+    _braveness: int = 100  # braveness of the unit
     reach: int = 1.5  # how far damage can be dealt
     speed: int = 1  # how far the unit can go at a time
     is_dead: bool = False
