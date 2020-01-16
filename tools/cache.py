@@ -8,12 +8,9 @@ class Cache(metaclass=Tool):
     def __init__(self):
         self._records = {}
 
-    def __setitem__(self, key, value):
-        self._records[key] = value
-
     def __getitem__(self, arg):
         key = id(arg)
-        if not key in self._records:
+        if key not in self._records:
             raise KeyError
         return self._records[key]
 
@@ -29,7 +26,8 @@ class Cache(metaclass=Tool):
 def cache(fun):
     @wraps(fun)
     def cached(*args):
-        key = [a for n, a in zip(signature(fun).parameters, args) if n != "self"][0]
+        param = signature(fun).parameters
+        key = [a for n, a in zip(param, args) if n != "self"][0]
         try:
             return Cache[fun][key]
         except KeyError:
@@ -37,4 +35,3 @@ def cache(fun):
             Cache[fun][key] = value
             return value
     return cached
-

@@ -20,4 +20,3 @@ class UnitBase:
     @health.setter
     def health(self, value):
         self._health = max(0, value)
-

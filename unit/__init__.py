@@ -1,6 +1,6 @@
 from random import random
-import numpy as np
 from dataclasses import dataclass
+import numpy as np
 
 from tools import tools
 from delay import delay
@@ -10,7 +10,7 @@ from .field import UnitField
 from .strategy import Strategy
 
 
-# todo: delay is way broken
+# todo: delay is broken
 
 
 @dataclass(init=False)
@@ -20,7 +20,6 @@ class Unit(UnitBase, UnitField, Strategy):
         for prototype in (base, field, strategy):
             for name in prototype.__dataclass_fields__:
                 setattr(self, name, getattr(prototype, name))
-
 
     def decide(self, all_units):
         others = [unit for unit in all_units if not unit.is_dead]
@@ -56,7 +55,7 @@ class Unit(UnitBase, UnitField, Strategy):
             self.health = 0
 
         barycenter = [np.mean([e.coords[i] for e in enemies]) for i in (0, 1)]
-        self.move(-self.direction(barycenter)) # delayed
+        self.move(-self.direction(barycenter))
 
     @delay
     def moral_update(self, allies, enemies):

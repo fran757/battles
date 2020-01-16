@@ -1,9 +1,8 @@
-import numpy as np
 from copy import deepcopy
 from dataclasses import dataclass
 from itertools import islice
-from PyQt5.QtGui import QPen, QColor, QBrush
 from typing import List
+import numpy as np
 
 from unit import Unit, UnitBase, UnitField, Strategy
 from tools import tools, Cache
@@ -39,11 +38,6 @@ class Simulation:
             health[unit.side] += unit.health
         return np.all(health > 0)
 
-    def export(self, state, name):
-        print("Generating new simulation...")
-        battle = Battle(self.states[state].units)
-        make_simulation(battle, name)
-
 
 def prepare_battle():
     infantryman = UnitBase(4, 1.5, 1, 5)
@@ -53,7 +47,6 @@ def prepare_battle():
     def array(fun):
         return lambda *a: np.array(fun(*a), float)
     positions = map(array, [lambda i, j: (i, j), lambda i, j: (30 - i, j)])
-
 
     units = []
     for side, (position, strategy) in enumerate(zip(positions, strategies)):
@@ -76,7 +69,6 @@ def read_battle(file_name):
         base_cast = [0, 1, 0, 0]
         coord_cast = [1, 1]
         field_cast = [2, 0, 0]
-        strat_cast = [1, 1]
 
         def cast(values, index):
             return [types[i](values.pop(0)) for i in index]
@@ -90,7 +82,7 @@ def read_battle(file_name):
                 base = UnitBase(*cast(unit, base_cast))
 
                 side, = cast(unit, [0])
-                coords = np.array(cast(unit, [1, 1]))
+                coords = np.array(cast(unit, coord_cast))
                 field = UnitField(side, coords, *cast(unit, field_cast))
 
                 strat = Strategy(strategies[field.side])

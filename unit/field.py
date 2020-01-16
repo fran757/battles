@@ -8,8 +8,8 @@ class UnitField:
     side: int
     coords: np.ndarray
     is_centurion: bool
-    braveness: int=100
-    time_fleeing: int=0
+    braveness: int = 100
+    time_fleeing: int = 0
 
     @property
     def is_fleeing(self):
