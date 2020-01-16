@@ -1,5 +1,5 @@
 from .timer import clock as _clock, clock_report
-from .cache import cache as _cache
+from .cache import cache as _cache, Cache
 from .log import log as _log
 
 

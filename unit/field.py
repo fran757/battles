@@ -7,8 +7,9 @@ class UnitField:
     """Unit on the field."""
     side: int
     coords: np.ndarray
-    braveness: int = 100
-    time_fleeing: int = 0
+    is_centurion: bool
+    braveness: int=100
+    time_fleeing: int=0
 
     @property
     def is_fleeing(self):
@@ -25,11 +26,13 @@ class UnitField:
 
     def direction(self, target):
         delta = target - self.coords
+        if all(delta == 0):
+            return np.zeros(2)
         return delta / np.linalg.norm(delta)
 
     def reset_braveness(self):
         self.braveness = 100
         self.time_fleeing = 0
 
-    def moral_change(self, value):
+    def change_moral(self, value):
         self.braveness += value

@@ -2,7 +2,7 @@ from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QWidget, QGraphicsView, QGraphicsScene
 from PyQt5.QtGui import QPen, QColor, QBrush, QPixmap
 from PyQt5.QtTest import QTest
-from simulate import Simulation, GraphicUnit
+from simulation import Simulation, read_battle, make_battle
 
 
 class Battlefield(QGraphicsView):
@@ -37,7 +37,7 @@ class Battlefield(QGraphicsView):
         self.draw()
 
     def load_from_file(self, path: str):
-        self.simulation = Simulation(path)
+        self.simulation = Simulation(read_battle(path))
         self._state = 0
         self._size = self.simulation.size
 
@@ -67,7 +67,7 @@ class Battlefield(QGraphicsView):
         """
         To get a specific unit specs
         """
-        return self.simulation.get_state(self._state)[index]
+        return self.simulation.states[self._state][index]
 
     @property
     def size(self):
@@ -91,14 +91,20 @@ class Battlefield(QGraphicsView):
             self.colormap = self.possible_colors[color]
             self.draw()
 
+    def unit_position(self, unit):
+        return (unit.coords + 10) * self.unit_size * self.zoom_level
+
     def on_mousePressEvent(self, event):
         pos = self.mapToScene(event.pos())
-        sim = self.simulation.get_state(self.state)
+        click = np.array(pos.x(), pos.y())
+        sim = self.simulation.states[self.state]
         for i in range(len(sim)):
-            if sim[i].is_here(pos.x(), pos.y(), self.unit_size, self.zoom_level):
+            unit_pos = self.unit_position(unit)
+            if np.all(unit_pos <= click <= unit_pos + self.unit_size):
                 self.click.emit(i)
                 self.selected_unit = i
                 self.draw()
+                break # one unit at a time right ?
 
     def on_mouseMoveEvent(self, event):
         if(self.edit):
@@ -127,26 +133,39 @@ class Battlefield(QGraphicsView):
         self.simu = not(self.simu)
 
     def gen_color(self, index, unit):
-        """
-        To generate a colormap
-        """
-        max_val = max([unit.specs()[index] for unit in self.simulation.get_state(0)])
-        return {0: QColor(150*(unit.specs()[index]/max_val)+105, 0, 0),
-                1: QColor(0, 0, 150*(unit.specs()[index]/max_val)+105)}
+        """Generate a colormap for unit."""
+        def specs(unit):
+            return [unit.health, unit.strength, unit.braveness]
+        max_val = max([specs(unit)[index] for unit in self.simulation.states[0]])
+        shade = 150 * (specs(unit)[index] / max_val) + 105
+        color = [0, 0, 0]
+        color[2 * unit.side] = shade
+        return QColor(*color)
+
+    def draw_unit(self, unit, pen, brush):
+        position = self.unit_position(unit)
+        self.scene.addRect(*position, *[self.unit_size] * 2, pen, brush)
+
+    def draw_image(self, image):
+        def shape(dim):
+            return int(dim * (1 + self.zoom_level))
+        self.scene.addPixmap(image.scaled(*map(shape, (image.width(), image.height()))))
+
 
     def draw(self):
         """Draw the units."""
         self.scene.clear()
-        # self.scene.addRect(-100, -100, 500, 500, QPen(), QBrush(QColor(255, 255, 255)))
-        self.scene.addPixmap(self.background.scaled(int(self.background.width()*(1+self.zoom_level)),
-                                                    int(self.background.height()*(1+self.zoom_level))))
+        self.draw_image(self.background)
+
+        state = self.simulation.states[self.state]
+
         # shuffle so that we also see blue units
-        for unit in self.simulation.get_state(self._state):
-            if not unit.health == 0:
-                i, j = [unit.x+10, unit.y+10]
+        for unit in state:
+            if not unit.is_dead:
                 color = self.gen_color(self.colormap, unit)
-                unit.draw(self.scene, self.unit_size, self.zoom_level, color[unit.side])
-        self.simulation.get_state(self._state)[self.selected_unit].draw(self.scene, self.unit_size, self.zoom_level, QColor(0, 255, 0))
+                self.draw_unit(unit, QPen(), QBrush(color))
+
+        self.draw_unit(state[self.selected_unit], QPen(), QBrush(QColor(0, 255, 0)))
 
     def wait_mode_on(self):
         self.wait = True
@@ -158,7 +177,7 @@ class Battlefield(QGraphicsView):
 
     def export(self, name):
         """To export the current state"""
-        self.simulation.export(self.state, name)
+        make_battle(self.simulation.states[self.state], name)
 
     def instant_export(self):
         self.wait_mode_on()
