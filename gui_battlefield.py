@@ -28,6 +28,8 @@ class Battlefield(QGraphicsView):
         self.simu = False
         self.loading = QLabel()
 
+        self.wait = False
+
         gif_load = QMovie("loading.gif")
         self.loading.setMovie(gif_load)
         gif_load.start()
@@ -159,13 +161,17 @@ class Battlefield(QGraphicsView):
 
     def export(self, name):
         """To export the current state"""
-        self.scene.addRect(-10,-10, int(self.background.width()*(1+self.zoom_level)), int(self.background.height()*(1+self.zoom_level)), QPen(), QBrush(QColor(255, 255, 255)))
-        self.scene.addWidget(self.loading)
-        QTest.qWait(200)
-        self.simulation.export(self.state, name)
-        QTest.qWait(200)
-        self.draw()
+        if not(self.wait):
+            self.wait = True
+            self.scene.addRect(-10,-10, int(self.background.width()*(1+self.zoom_level)), int(self.background.height()*(1+self.zoom_level)), QPen(), QBrush(QColor(255, 255, 255)))
+            self.scene.addWidget(self.loading)
+            QTest.qWait(200)
+            self.simulation.export(self.state, name)
+            QTest.qWait(200)
+            self.draw()
+            self.wait = False
 
     def instant_export(self):
-        self.export("new.txt")
-        self.load_from_file("new.txt")
+        if not(self.wait):
+            self.export("new.txt")
+            self.load_from_file("new.txt")
