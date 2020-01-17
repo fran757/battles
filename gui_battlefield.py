@@ -118,8 +118,7 @@ class Battlefield(QGraphicsView):
             pos = self.mapToScene(event.pos())
             new_x = (pos.x()/(self.zoom_level*self.unit_size))-10
             new_y = (pos.y()/(self.zoom_level*self.unit_size))-10
-            self.simulation.get_state(self._state)[
-                self.selected_unit].move(new_x, new_y)
+            self.simulation.states[self.state][self.selected_unit].move(new_x, new_y)
             self.draw()
             if self.simu:
                 self.instant_export()
