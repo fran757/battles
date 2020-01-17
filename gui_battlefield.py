@@ -70,7 +70,7 @@ class Battlefield(QGraphicsView):
 
     def get_unit(self, index: int):
         """Access specific unit."""
-        return self.simulation.states[self._state][index]
+        return self.simulation.state(self._state)[index]
 
     @property
     def size(self):
@@ -95,7 +95,7 @@ class Battlefield(QGraphicsView):
     def on_mousePressEvent(self, event):
         pos = self.mapToScene(event.pos())
         click = np.array((pos.x(), pos.y()))
-        for i, unit in enumerate(self.simulation.states[self.state]):
+        for i, unit in enumerate(self.simulation.state(self.state)):
             unit_pos = self.unit_position(unit)
             if np.all(unit_pos <= click) and np.all(click <= unit_pos + self.unit_size):
                 self.click.emit(i)
@@ -118,7 +118,7 @@ class Battlefield(QGraphicsView):
             pos = self.mapToScene(event.pos())
             new_x = (pos.x()/(self.zoom_level*self.unit_size))-10
             new_y = (pos.y()/(self.zoom_level*self.unit_size))-10
-            self.simulation.states[self.state][self.selected_unit].move(new_x, new_y)
+            self.simulation.state(self.state)[self.selected_unit].move(new_x, new_y)
             self.draw()
             if self.simu:
                 self.instant_export()
@@ -133,7 +133,7 @@ class Battlefield(QGraphicsView):
         """Generate a colormap for unit."""
         def specs(unit):
             return [unit.health, unit.strength, unit.braveness]
-        max_val = max([specs(unit)[index] for unit in self.simulation.states[0]])
+        max_val = max([specs(unit)[index] for unit in self.simulation.state(0)])
         shade = 150 * (specs(unit)[index] / max_val) + 105
         color = [0, 0, 0]
         color[2 * unit.side] = shade
@@ -154,7 +154,7 @@ class Battlefield(QGraphicsView):
         self.draw_image(self.background)
 
         # shuffle so that we also see blue units
-        state = self.simulation.states[self.state]
+        state = self.simulation.state(self.state)
         for unit in state:
             if not unit.is_dead:
                 color = self.gen_color(self.colormap, unit)
@@ -169,7 +169,7 @@ class Battlefield(QGraphicsView):
             self.scene.addRect(-10,-10, int(self.background.width()*(1+self.zoom_level)), int(self.background.height()*(1+self.zoom_level)), QPen(), QBrush(QColor(255, 255, 255)))
             self.scene.addWidget(self.loading)
             QTest.qWait(200)
-            make_battle(self.simulation.states[self.state], name)
+            make_battle(self.simulation.state(self.state), name)
             QTest.qWait(200)
             self.draw()
             self.wait = False

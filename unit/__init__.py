@@ -15,8 +15,11 @@ class Unit(UnitBase, UnitField, Strategy):
     def __init__(self, base, field, strategy):
         """Build unit from component prototypes."""
         for prototype in (base, field, strategy):
-            for name in prototype.__dataclass_fields__:
-                setattr(self, name, getattr(prototype, name))
+            for name, field in prototype.__dataclass_fields__.items():
+                value = getattr(prototype, name)
+                if not isinstance(value, field.type):
+                    tools(log=f"{name}, {type(value)}, {value}")()
+                setattr(self, name, value)
 
     def decide(self, all_units):
         """Take a decision based on all other units on the field.
@@ -39,6 +42,7 @@ class Unit(UnitBase, UnitField, Strategy):
         def criteria(other):
             close = self.closer * self.distance(other)
             weak = self.weaker * other.health
+
             return close + weak
 
         target = sorted(enemies, key=criteria)[0]

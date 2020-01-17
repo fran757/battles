@@ -4,7 +4,11 @@ from .log import log as _log
 
 
 def tools(cache=False, clock=False, log=None):
-    def deco(fun):
+    def deco(fun=None):
+        # allows for simple call usage
+        if fun is None:
+            return deco(lambda: None)()
+
         if clock:
             fun = _clock(fun)
         if log is not None:

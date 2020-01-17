@@ -19,6 +19,9 @@ class Simulation:
         """Length of battle (number of steps)."""
         return len(self.states)
 
+    def state(self, i):
+        return self.states[i]
+
     @property
     def units(self):
         """Access units from latest state of the battle."""
@@ -46,9 +49,9 @@ class Simulation:
 def prepare_battle():
     """Generate initial state of custom battle."""
     infantryman = UnitBase(4, 1.5, 1, 5)
-    archer = UnitBase(2, 100, 1, 3)
+    archer = UnitBase(2, 100., 1, 3)
     centurion = UnitBase(100, 1.5, 1, 1000)
-    strategies = [Strategy(1, 0), Strategy(0, 1)]
+    strategies = [Strategy(1., 0.), Strategy(0., 1.)]
 
     def array(fun):
         return lambda *a: np.array(fun(*a), float)
@@ -71,17 +74,19 @@ def prepare_battle():
 def read_battle(file_name):
     """Parse file for successive steps of a battle."""
     with open(file_name, 'r') as file:
-        lines_strat = [file.readline().split() for _ in range(2)]
-        strategies = np.array(lines_strat, int)
+        strat_lines = [file.readline().split() for _ in range(2)]
 
         states = []
         types = [int, float, lambda x: {"True": True, "False": False}[x]]
         base_cast = [0, 1, 0, 0]
         coord_cast = [1, 1]
         field_cast = [2, 0, 0]
+        strat_cast = [1, 1]
 
         def cast(values, index):
             return [types[i](values.pop(0)) for i in index]
+
+        strategies = [cast(line, strat_cast) for line in strat_lines]
 
         status = file.readline().split()
         while status:
@@ -95,7 +100,7 @@ def read_battle(file_name):
                 coords = np.array(cast(unit, coord_cast))
                 field = UnitField(side, coords, *cast(unit, field_cast))
 
-                strat = Strategy(strategies[field.side])
+                strat = Strategy(*strategies[field.side])
                 units.append(Unit(base, field, strat))
             states.append(units)
             status = file.readline().split()
