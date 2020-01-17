@@ -12,7 +12,7 @@ from PyQt5.QtWidgets import QApplication
 
 from tools.timer import clock_report
 from tools.log import Logger
-from gui_window import MainWindow
+from gui import MainWindow
 from simulation import prepare_battle, make_battle
 
 

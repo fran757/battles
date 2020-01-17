@@ -3,8 +3,9 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QMenuBar, QMainWi
 from PyQt5.QtGui import QMovie
 from PyQt5.QtWidgets import QMenu, QAction, QFileDialog, QLabel, QComboBox, QDialog
 from PyQt5.QtTest import QTest
-from gui_buttons import ActionButtons, InfoBox
-from gui_battlefield import Battlefield
+
+from .buttons import ActionButtons, InfoBox
+from .battlefield import Battlefield
 import os
 
 
