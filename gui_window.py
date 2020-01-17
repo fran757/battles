@@ -26,14 +26,16 @@ class MainMenu(QMenuBar):
         self.loadAction.triggered.connect(self.load)
         self.saveAction.triggered.connect(self.save)
 
+    @staticmethod
+    def path():
+        return os.path.dirname(os.path.abspath(__file__))
+
     def load(self):
-        name = QFileDialog.getOpenFileName(self, 'Open file',
-                                               os.path.dirname(os.path.abspath(__file__)), "Game files (*.txt)")
+        name = QFileDialog.getOpenFileName(self, 'Open file', self.path(), "Game files (*.txt)")
         self.loading.emit(name[0])
 
     def save(self):
-        name = QFileDialog.getSaveFileName(self, 'Save file',
-                                               os.path.dirname(os.path.abspath(__file__)), "Game files (*.txt)")
+        name = QFileDialog.getSaveFileName(self, 'Save file', self.path(), "Game files (*.txt)")
         self.saving.emit(name[0])
 
 
@@ -99,7 +101,9 @@ class MainWindow(QWidget):
         self.info.change_unit(self.battlefield.get_unit(self.selected_unit))
 
     def change_specs(self, new_specs):
-        self.battlefield.get_unit(self.selected_unit).set_specs(new_specs)
+        unit = self.battlefield.get_unit(self.selected_unit)
+        for key, value in zip(("health", "strength", "braveness"), new_specs):
+            setattr(unit, key, value)
 
     def instant_export(self):
         self.battlefield.instant_export()

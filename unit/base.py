@@ -7,7 +7,7 @@ class UnitBase:
     strength: int
     reach: float
     speed: int
-    _health: int
+    _health: int  # todo: max/health separation (immutable base)
 
     @property
     def is_dead(self):

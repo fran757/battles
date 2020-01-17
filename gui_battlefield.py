@@ -1,12 +1,14 @@
 from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtWidgets import QWidget, QGraphicsView, QGraphicsScene
+from PyQt5.QtWidgets import QGraphicsView, QGraphicsScene
 from PyQt5.QtGui import QPen, QColor, QBrush, QPixmap
 from PyQt5.QtTest import QTest
+import numpy as np
+
 from simulation import Simulation, read_battle, make_battle
 
 
 class Battlefield(QGraphicsView):
-    """The graphical battlefield"""
+    """The graphical battlefield."""
 
     click = pyqtSignal(int)
 
@@ -43,71 +45,59 @@ class Battlefield(QGraphicsView):
 
     def update(self, state_step: int):
         """Update the graphics and the grid between two steps."""
-        if 0 <= self._state+state_step < self.simulation.size:
+        if 0 <= self._state + state_step < self.simulation.size:
             self._state += state_step
             self.draw()
 
     def go_to_state(self, state):
-        """
-        Going to the state
-        """
+        """Move animation to given state."""
         if 0 <= state < self.simulation.size:
             self._state = int(state)
             self.draw()
 
     def zoom(self, precision: float):
-        """
-        To zoom in on the picture
-        """
+        """Zoom in on the picture."""
         self.zoom_level *= precision
         self.resetCachedContent()
         self.draw()
 
     def get_unit(self, index: int):
-        """
-        To get a specific unit specs
-        """
+        """Access specific unit."""
         return self.simulation.states[self._state][index]
 
     @property
     def size(self):
-        """
-        Get the size of the simulation
-        """
+        """Get the size of the simulation."""
         return self._size
 
     @property
     def state(self):
-        """
-        Get the current state
-        """
+        """Get the current state."""
         return self._state
 
     def change_colormap(self, color: str):
-        """
-        To change the colormap
-        """
-        if(color in self.possible_colors):
+        """Change the colormap."""
+        if color in self.possible_colors:
             self.colormap = self.possible_colors[color]
             self.draw()
 
     def unit_position(self, unit):
+        """Get screen position of unit."""
         return (unit.coords + 10) * self.unit_size * self.zoom_level
 
     def on_mousePressEvent(self, event):
         pos = self.mapToScene(event.pos())
-        click = np.array(pos.x(), pos.y())
-        sim = self.simulation.states[self.state]
-        for i in range(len(sim)):
+        click = np.array((pos.x(), pos.y()))
+        for i, unit in enumerate(self.simulation.states[self.state]):
             unit_pos = self.unit_position(unit)
-            if np.all(unit_pos <= click <= unit_pos + self.unit_size):
+            if np.all(unit_pos <= click) and np.all(click <= unit_pos + self.unit_size):
                 self.click.emit(i)
                 self.selected_unit = i
                 self.draw()
-                break # one unit at a time right ?
+                break  # one unit at a time right ?
 
     def on_mouseMoveEvent(self, event):
-        if(self.edit):
+        if self.edit:
             self.draw()
             pos = self.mapToScene(event.pos())
             self.scene.addRect(pos.x(), pos.y(),
@@ -117,7 +107,7 @@ class Battlefield(QGraphicsView):
             QTest.qWait(10)
 
     def on_mouseReleaseEvent(self, event):
-        if(self.edit):
+        if self.edit:
             pos = self.mapToScene(event.pos())
             new_x = (pos.x()/(self.zoom_level*self.unit_size))-10
             new_y = (pos.y()/(self.zoom_level*self.unit_size))-10
@@ -151,15 +141,13 @@ class Battlefield(QGraphicsView):
             return int(dim * (1 + self.zoom_level))
         self.scene.addPixmap(image.scaled(*map(shape, (image.width(), image.height()))))
 
-
     def draw(self):
-        """Draw the units."""
+        """Draw the units and background."""
         self.scene.clear()
         self.draw_image(self.background)
 
-        state = self.simulation.states[self.state]
-
         # shuffle so that we also see blue units
+        state = self.simulation.states[self.state]
         for unit in state:
             if not unit.is_dead:
                 color = self.gen_color(self.colormap, unit)
@@ -169,7 +157,7 @@ class Battlefield(QGraphicsView):
 
     def wait_mode_on(self):
         self.wait = True
-        self.scene.addRect(0,0, int(self.background.width()*(1+self.zoom_level)), int(self.background.height()*(1+self.zoom_level)), QPen(), QBrush(QColor(255, 255, 255)))
+        self.scene.addRect(0, 0, int(self.background.width()*(1+self.zoom_level)), int(self.background.height()*(1+self.zoom_level)), QPen(), QBrush(QColor(255, 255, 255)))
 
     def wait_mode_off(self):
         self.wait = False
