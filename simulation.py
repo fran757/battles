@@ -27,7 +27,6 @@ class Simulation:
     @property
     def volume(self):
         """Total health on each side."""
-        return [min([u.health for u in self.units if u.side == s]) for s in (0, 1)]
         return [sum([u.health for u in self.units if u.side == s]) for s in (0, 1)]
 
     @tools(log="{self.volume}")
@@ -41,7 +40,6 @@ class Simulation:
     @property
     def is_finished(self):
         """Tell whether battle is over (one side has no health)."""
-        return np.all([sum([u.health for u in self.units if u.side == s]) for s in (0, 1)])
         return np.all(self.volume)
 
 
