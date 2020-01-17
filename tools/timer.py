@@ -41,5 +41,5 @@ def clock(fun):
 def clock_report():
     """Provide timing records."""
     print("Clock report :")
-    for name, (n, time) in Clock.report().items():
-        print(f"{name} (x{n}): {time:.3f} s")
+    for name, (count, total) in Clock.report().items():
+        print(f"{name} (x{count}): {total:.3f} s")

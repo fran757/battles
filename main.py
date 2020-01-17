@@ -13,7 +13,7 @@ from PyQt5.QtWidgets import QApplication
 from tools.timer import clock_report
 from tools.log import Logger
 from gui_window import MainWindow
-from simulate import prepare_battle, make_simulation
+from simulation import prepare_battle, make_battle
 
 
 def main():
@@ -23,7 +23,7 @@ def main():
     app = QApplication([])
     if "-s" in sys.argv:
         print("generating simulation...")
-        make_simulation(prepare_battle(), "save.txt")
+        make_battle(prepare_battle(), "save.txt")
         print("done !")
     if "-a" not in sys.argv:
         window = MainWindow("save.txt")

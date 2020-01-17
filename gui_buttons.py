@@ -1,6 +1,5 @@
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QWidget, QPushButton, QHBoxLayout, QVBoxLayout, QGridLayout, QLabel, QCheckBox, QLineEdit
-from simulate import GraphicUnit
 
 
 class Button(QPushButton):
@@ -14,9 +13,7 @@ class Button(QPushButton):
         self.setFixedWidth(30)
         self.setText(label)
         self._value = value
-        self.setStyleSheet("""
-                QPushButton { height: 30; width: 30; qproperty-iconSize: 25px;}
-                """)
+        self.setStyleSheet("QPushButton { height: 30; width: 30; qproperty-iconSize: 25px;}")
 
     @property
     def value(self):
@@ -84,7 +81,7 @@ class InfoBox(QWidget):
     generate = pyqtSignal()
     save_specs = pyqtSignal(list)
 
-    def __init__(self, unit: GraphicUnit):
+    def __init__(self, unit):
         super().__init__()
         self.unit = unit
         layout = QVBoxLayout()
@@ -147,7 +144,7 @@ class InfoBox(QWidget):
     def simu_box_checked(self):
         self.simu_checked.emit()
 
-    def change_unit(self, unit: GraphicUnit):
+    def change_unit(self, unit):
         self.unit = unit
         self.side.setText("side: "+str(self.unit.side))
         self.health_edit.setText(str(self.unit.health))

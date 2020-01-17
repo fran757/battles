@@ -1,4 +1,5 @@
 """Helpful decorator for separating the decision taking and enforcing rounds."""
+from functools import wraps
 
 
 class Order:
@@ -37,6 +38,7 @@ def delay(action):
     Bye World
     """
 
+    @wraps(action)
     def order(*args):
         """Place order and recieve 'reciept'."""
         return Order(lambda: action(*args))

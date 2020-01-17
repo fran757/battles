@@ -26,10 +26,10 @@ def log(message):
     def wrapper(fun):
         @wraps(fun)
         def wrapped(*args, **kwargs):
-            formats = {n: v for n, v in zip(signature(fun).parameters, args)}
+            formats = dict(zip(signature(fun).parameters, args))
             formats.update(kwargs)
             output = fun(*args, **kwargs)
-            formats.update(output = output)
+            formats.update(output=output)
             Logger.log(message.format(**formats))
             return output
         return wrapped
