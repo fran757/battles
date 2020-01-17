@@ -118,8 +118,7 @@ class MainWindow(QWidget):
         To update the battlefield and the widgets
         """
         self.battlefield.update(step_state)
-        self.message.setText(
-            "step "+str(self.battlefield.state+1)+"/"+str(self.battlefield.size))
+        self.message.setText(f"step{self.battlefield.state + 1}/{self.battlefield.size}")
         self.slide.setValue(self.slide.value() + step_state)
         self.info.change_unit(self.battlefield.get_unit(self.selected_unit))
 
@@ -129,8 +128,7 @@ class MainWindow(QWidget):
         """
         self.battlefield.go_to_state(self.slide.value())
         self.info.change_unit(self.battlefield.get_unit(self.selected_unit))
-        self.message.setText(
-            "step "+str(self.battlefield.state+1)+"/"+str(self.battlefield.size))
+        self.message.setText(f"step{self.battlefield.state + 1}/{self.battlefield.size}")
 
     def play_pause(self):
         """
