@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 @dataclass
 class UnitBase:
-    """Kind of unit."""
+    """Basic stats container, unit prototype."""
     strength: int
     reach: float
     speed: int
@@ -19,4 +19,5 @@ class UnitBase:
 
     @health.setter
     def health(self, value):
+        """Unit health cannot be negative."""
         self._health = max(0, value)

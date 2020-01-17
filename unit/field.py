@@ -4,7 +4,7 @@ import numpy as np
 
 @dataclass
 class UnitField:
-    """Unit on the field."""
+    """In-situ unit stats container and modyfiers."""
     side: int
     coords: np.ndarray
     is_centurion: bool
@@ -22,6 +22,7 @@ class UnitField:
         return other is not self and other.side == self.side
 
     def distance(self, other):
+        """Distance to other unit."""
         return np.linalg.norm(other.coords - self.coords)
 
     def direction(self, target):

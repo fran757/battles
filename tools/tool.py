@@ -1,9 +1,11 @@
 def _name(fun):
-    """Name under which the function will be recorder."""
+    """Name under which the function will be registered."""
     return f"{fun.__module__} / {fun.__qualname__}"
 
 
 class Tool(type):
+    """Metaclass for function-specific tools.
+    Functions get a registry by name, with dictionnary-like access."""
     def __new__(cls, name, bases, attrs):
         tool = super().__new__(cls, name, bases, attrs)
         tool._known = {}
