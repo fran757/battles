@@ -1,6 +1,6 @@
 from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtWidgets import QWidget, QGraphicsView, QGraphicsScene
-from PyQt5.QtGui import QPen, QColor, QBrush, QPixmap
+from PyQt5.QtWidgets import QWidget, QGraphicsView, QGraphicsScene, QLabel
+from PyQt5.QtGui import QPen, QColor, QBrush, QPixmap, QMovie
 from PyQt5.QtTest import QTest
 from simulate import Simulation, GraphicUnit
 
@@ -9,6 +9,8 @@ class Battlefield(QGraphicsView):
     """The graphical battlefield"""
 
     click = pyqtSignal(int)
+    start = pyqtSignal()
+    stop = pyqtSignal()
 
     def __init__(self, path: str):
         super().__init__()
@@ -24,8 +26,11 @@ class Battlefield(QGraphicsView):
         self.selected_unit = 0
         self.edit = False
         self.simu = False
+        self.loading = QLabel()
 
-        self.wait = False
+        gif_load = QMovie("loading.gif")
+        self.loading.setMovie(gif_load)
+        gif_load.start()
 
         self.mousePressEvent = self.on_mousePressEvent
         self.mouseMoveEvent = self.on_mouseMoveEvent
@@ -115,7 +120,8 @@ class Battlefield(QGraphicsView):
             pos = self.mapToScene(event.pos())
             new_x = (pos.x()/(self.zoom_level*self.unit_size))-10
             new_y = (pos.y()/(self.zoom_level*self.unit_size))-10
-            self.simulation.get_state(self._state)[self.selected_unit].move(new_x, new_y)
+            self.simulation.get_state(self._state)[
+                self.selected_unit].move(new_x, new_y)
             self.draw()
             if self.simu:
                 self.instant_export()
@@ -130,7 +136,8 @@ class Battlefield(QGraphicsView):
         """
         To generate a colormap
         """
-        max_val = max([unit.specs()[index] for unit in self.simulation.get_state(0)])
+        max_val = max([unit.specs()[index]
+                       for unit in self.simulation.get_state(0)])
         return {0: QColor(150*(unit.specs()[index]/max_val)+105, 0, 0),
                 1: QColor(0, 0, 150*(unit.specs()[index]/max_val)+105)}
 
@@ -145,23 +152,20 @@ class Battlefield(QGraphicsView):
             if not unit.health == 0:
                 i, j = [unit.x+10, unit.y+10]
                 color = self.gen_color(self.colormap, unit)
-                unit.draw(self.scene, self.unit_size, self.zoom_level, color[unit.side])
-        self.simulation.get_state(self._state)[self.selected_unit].draw(self.scene, self.unit_size, self.zoom_level, QColor(0, 255, 0))
-
-    def wait_mode_on(self):
-        self.wait = True
-        self.scene.addRect(0,0, int(self.background.width()*(1+self.zoom_level)), int(self.background.height()*(1+self.zoom_level)), QPen(), QBrush(QColor(255, 255, 255)))
-
-    def wait_mode_off(self):
-        self.wait = False
-        self.draw()
+                unit.draw(self.scene, self.unit_size,
+                          self.zoom_level, color[unit.side])
+        self.simulation.get_state(self._state)[self.selected_unit].draw(
+            self.scene, self.unit_size, self.zoom_level, QColor(0, 255, 0))
 
     def export(self, name):
         """To export the current state"""
+        self.scene.addRect(-10,-10, int(self.background.width()*(1+self.zoom_level)), int(self.background.height()*(1+self.zoom_level)), QPen(), QBrush(QColor(255, 255, 255)))
+        self.scene.addWidget(self.loading)
+        QTest.qWait(200)
         self.simulation.export(self.state, name)
+        QTest.qWait(200)
+        self.draw()
 
     def instant_export(self):
-        self.wait_mode_on()
         self.export("new.txt")
-        self.wait_mode_off()
         self.load_from_file("new.txt")
