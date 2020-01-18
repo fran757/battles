@@ -1,5 +1,5 @@
 from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtWidgets import QWidget, QGraphicsView, QGraphicsScene, QLabel
+from PyQt5.QtWidgets import QGraphicsView, QGraphicsScene, QLabel
 from PyQt5.QtGui import QPen, QColor, QBrush, QPixmap, QMovie
 from PyQt5.QtTest import QTest
 import numpy as np
