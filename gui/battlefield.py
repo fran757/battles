@@ -23,7 +23,7 @@ class Battlefield(QGraphicsView):
         self.scene = QGraphicsScene()
         self.grid_size = 50
         self.colormap = 0
-        self.background = QPixmap("fond.png")
+        self.background = QPixmap("gui/fond.png")
         self.zoom_level = 1
         self.selected_unit = 0
         self.edit = False
@@ -32,7 +32,7 @@ class Battlefield(QGraphicsView):
 
         self.wait = False
 
-        gif_load = QMovie("loading.gif")
+        gif_load = QMovie("gui/loading.gif")
         self.loading.setMovie(gif_load)
         gif_load.start()
 
