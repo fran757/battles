@@ -95,16 +95,14 @@ class Battlefield(QGraphicsView):
     def on_mousePressEvent(self, event):
         pos = self.mapToScene(event.pos())
         click = np.array((pos.x(), pos.y()))
-        on_unit = False
         for i, unit in enumerate(self.simulation.state(self.state)):
             unit_pos = self.unit_position(unit)
             if np.all(unit_pos <= click) and np.all(click <= unit_pos + self.unit_size):
                 self.click.emit(i)
                 self.selected_unit = i
                 self.draw()
-                on_unit = True
-                break  # one unit at a time right ?
-        if not on_unit:
+                break
+        else:  # no unit found under pointer
             pos = event.pos()
             self.centerOn(pos.x(), pos.y())
 
