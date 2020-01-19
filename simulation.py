@@ -49,7 +49,7 @@ class Simulation:
 def prepare_battle():
     """Generate initial state of custom battle."""
     infantryman = UnitBase(4, 1.5, 1, 5)
-    archer = UnitBase(2, 100., 1, 3)
+    archer = UnitBase(2, 10., 1, 3)
     centurion = UnitBase(100, 1.5, 1, 1000)
     strategies = [Strategy(1., 0.), Strategy(0., 1.)]
 
@@ -61,13 +61,15 @@ def prepare_battle():
     for side, (position, strategy) in enumerate(zip(positions, strategies)):
         for j in range(11):
             field = UnitField(side, position(-5, j), False, 1000, 0)
-            units.append(Unit(archer, field, strategies[1]))
+            units.append(Unit(archer, field, strategies[0]))
         for i, j in np.indices((10, 11)).reshape((2, -1)).T:
             field = UnitField(side, position(i, j), False, 100, 0)
             units.append(Unit(infantryman, field, strategy))
 
         field = UnitField(side, position(10, 5), True)
         units.append(Unit(centurion, field, Strategy(1, 0)))
+        field = UnitField(side, position(-4, 5), False, 1000, 0)
+        units.append(Unit(archer, field, strategies[0]))
     return units
 
 
