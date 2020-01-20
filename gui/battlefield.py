@@ -146,7 +146,10 @@ class Battlefield(QGraphicsView):
 
     def draw_unit(self, unit, pen, brush):
         position = self.unit_position(unit)
-        self.scene.addRect(*position, *[self.unit_size] * 2, pen, brush)
+        if unit.reach == 10:
+            self.scene.addEllipse(*position, *[self.unit_size] * 2, pen, brush)
+        else:
+            self.scene.addRect(*position, *[self.unit_size] * 2, pen, brush)
 
     def draw_image(self, image):
         def shape(dim):
