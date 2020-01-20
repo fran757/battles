@@ -137,7 +137,10 @@ class Battlefield(QGraphicsView):
     def gen_color(self, index, unit):
         """Generate a colormap for unit."""
         def specs(unit):
-            return [unit.health, unit.strength, unit.braveness]
+            if not unit.is_centurion:
+                return [unit.health, unit.strength, unit.braveness]
+            else:
+                return [0,0,0]
         max_val = max([specs(unit)[index] for unit in self.simulation.state(0)])
         shade = 150 * (specs(unit)[index] / max_val) + 105
         color = [0, 0, 0]
@@ -165,7 +168,13 @@ class Battlefield(QGraphicsView):
         state = self.simulation.state(self.state)
         for unit in state:
             if not unit.is_dead:
-                color = self.gen_color(self.colormap, unit)
+                if not unit.is_centurion:
+                    color = self.gen_color(self.colormap, unit)
+                else:
+                    if unit.side == 0:
+                        color = QColor(255,0,0)
+                    else:
+                        color = QColor(0,0,255)
                 self.draw_unit(unit, QPen(), QBrush(color))
         self.draw_unit(state[self.selected_unit], QPen(), QBrush(QColor(0, 255, 0)))
 
