@@ -10,6 +10,6 @@ class Bar:
     def advance(self, remaining):
         """Print simple loading bar, just knowing remaining 'time'."""
         ratio = 1 - remaining / self.total
-        progress = int(50 * ratio)
+        progress = round(50 * ratio)
         bar = "█" * progress + "-" * (50 - progress)
         print(f"\rProgress: |{bar}| {ratio * 100:.1f}% Complete", end="\r")

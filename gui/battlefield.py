@@ -52,9 +52,11 @@ class Battlefield(QGraphicsView):
 
     def update(self, state_step: int):
         """Update the graphics and the grid between two steps."""
-        if 0 <= self._state + state_step < self.simulation.size:
+        step_validity = 0 <= self._state + state_step < self.simulation.size
+        if step_validity:
             self._state += state_step
             self.draw()
+        return step_validity
 
     def go_to_state(self, state):
         """Move animation to given state."""

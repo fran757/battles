@@ -118,11 +118,12 @@ class MainWindow(QWidget):
         """
         To update the battlefield and the widgets
         """
-        self.battlefield.update(step_state)
+        stop = self.battlefield.update(step_state)
         self.message.setText(
             "step "+str(self.battlefield.state+1)+"/"+str(self.battlefield.size))
         self.slide.setValue(self.slide.value() + step_state)
         self.info.change_unit(self.battlefield.get_unit(self.selected_unit))
+        return stop
 
     def valuechange(self):
         """
@@ -139,5 +140,5 @@ class MainWindow(QWidget):
         """
         self.play = not self.play
         while self.play:
-            self.update(1)
+            self.play = self.update(1)
             QTest.qWait(400)
