@@ -20,13 +20,13 @@ def main():
     """Parse user input and start the simulation or launch GUI accordingly."""
     Logger.init("logs.txt")
 
-    app = QApplication([])
     if "-s" in sys.argv:
         print("generating simulation...")
         make_battle(prepare_battle(), "save.txt")
         print("done !")
         clock_report()
     if "-a" not in sys.argv:
+        app = QApplication([])
         window = MainWindow("save.txt")
         sys.exit(app.exec_())
 
