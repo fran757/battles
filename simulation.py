@@ -105,7 +105,16 @@ def read_battle(file_name):
 def make_battle(init, file_name: str):
     """Generate battle from initial state and write it to file."""
     with open(file_name, 'w') as file:
-        for state in iter(Simulation([init]).update, None):
+        simulation = Simulation([init])
+        volume = min(simulation.volume)
+        room = 80
+        for state in iter(simulation.update, None):
+            new_volume = min(simulation.volume)
+            delta = room * (volume - new_volume) // new_volume
+            print("█" * delta, end="", flush=True)
+            volume = new_volume
+            room -= delta
+
             file.write(f"{len(state)}\n")
             for unit in state:
                 file.write(" ".join(map(str, [
@@ -124,4 +133,5 @@ def make_battle(init, file_name: str):
                     unit.weaker,
                     unit.stronger
                 ])))
-                file.write(" \n")
+                file.write("\n")
+        print()
