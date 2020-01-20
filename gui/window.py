@@ -93,7 +93,7 @@ class MainWindow(QWidget):
         self.info.generate.connect(self.instant_export)
         self.info.save_specs.connect(self.change_specs)
 
-        self.setGeometry(300, 300, self.battlefield.width()+110,
+        self.setGeometry(300, 300, self.battlefield.width()+150,
                          self.battlefield.height())
         self.show()
 
