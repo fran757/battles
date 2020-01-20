@@ -15,10 +15,10 @@ class Unit(UnitBase, UnitField, Strategy):
     def __init__(self, base, field, strategy):
         """Build unit from component prototypes."""
         for prototype in (base, field, strategy):
-            for name, field in prototype.__dataclass_fields__.items():
+            for name, dfield in prototype.__dataclass_fields__.items():
                 value = getattr(prototype, name)
-                if not isinstance(value, field.type):
-                    tools(log=f"wrong type: {name}, {field.type}, {value}")()
+                if not isinstance(value, dfield.type):
+                    tools(log=f"wrong type: {name}, {dfield.type}, {value}")()
                 setattr(self, name, value)
 
     @tools(clock=True)
