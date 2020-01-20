@@ -3,5 +3,6 @@ from dataclasses import dataclass
 
 @dataclass
 class Strategy:
-    closer: float = 0
-    weaker: float = 0
+    closer: float = 0.
+    weaker: float = 0.
+    stronger: float = 0.

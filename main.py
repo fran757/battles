@@ -25,11 +25,10 @@ def main():
         print("generating simulation...")
         make_battle(prepare_battle(), "save.txt")
         print("done !")
+        clock_report()
     if "-a" not in sys.argv:
         window = MainWindow("save.txt")
         sys.exit(app.exec_())
-
-    clock_report()
 
 
 if __name__ == "__main__":
