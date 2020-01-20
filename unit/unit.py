@@ -65,7 +65,7 @@ class Unit(UnitBase, UnitField, Strategy):
         """If a centurion is close, be brave.
         Puss out if enemies are far.
         """
-        for ally in allies:
+        for ally in [self] + allies:
             if ally.is_centurion and self.distance(ally) < 5:
                 return delay(self.reset_braveness)()
 
