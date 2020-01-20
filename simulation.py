@@ -6,7 +6,7 @@ from typing import List
 import numpy as np
 
 from unit import Factory, Unit, UnitBase, UnitField, Strategy
-from tools import tools, Cache
+from tools import tools, Cache, Bar
 
 
 @dataclass
@@ -106,14 +106,9 @@ def make_battle(init, file_name: str):
     """Generate battle from initial state and write it to file."""
     with open(file_name, 'w') as file:
         simulation = Simulation([init])
-        volume = min(simulation.volume)
-        room = 80
+        bar = Bar(min(simulation.volume))
         for state in iter(simulation.update, None):
-            new_volume = min(simulation.volume)
-            delta = room * (volume - new_volume) // new_volume
-            print("█" * delta, end="", flush=True)
-            volume = new_volume
-            room -= delta
+            bar.advance(min(simulation.volume))
 
             file.write(f"{len(state)}\n")
             for unit in state:
