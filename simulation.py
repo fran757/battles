@@ -38,15 +38,17 @@ class Simulation:
     @tools(log="Armies' health: {self.volume}")
     def update(self):
         """Generate and append new state to simulation."""
+        if self.is_finished:
+            return None
         Cache.reset()
         self.states.append(deepcopy(self.units))
         sum((unit.decide(self.units) for unit in self.units), None)()
-        return self.units if self.is_finished else None
+        return self.units
 
     @property
     def is_finished(self):
         """Tell whether the battle is over (one side has no health)."""
-        return np.all(self.volume)
+        return not np.all(self.volume)
 
 
 @tools(clock=True)
@@ -65,7 +67,7 @@ def prepare_battle():
     units = []
     for side, (position, strategy) in enumerate(zip(positions, strategies)):
         factory = Factory(side)
-        for j in range(11):
+        for j in range(-5, 16, 2):
             units.append(factory("archer", position(-5, j), strategy))
         for i, j in np.indices((10, 11)).reshape((2, -1)).T:
             units.append(factory("infantry", position(i, j), strategy))
@@ -108,34 +110,40 @@ def read_battle(file_name):
         return states
 
 
+def write_battle(units, file_name, mode):
+    with open(file_name, mode) as file:
+        file.write(f"{len(units)}\n")
+        for unit in units:
+            assert unit.braveness is not True
+            file.write(" ".join(map(str, [
+                unit.strength,
+                unit.reach,
+                unit.speed,
+                unit.health,
+                unit.braveness,
+                unit.time_fleeing,
+
+                unit.side,
+                *unit.coords,
+                unit.is_centurion,
+
+                unit.closer,
+                unit.weaker,
+                unit.stronger
+            ])))
+            file.write("\n")
+
+
 @tools(clock=True)
 def make_battle(init, file_name: str):
     """Generate battle from initial state and write it to file.
     Will display a progress bar indicating health of losing army.
     """
-    with open(file_name, 'w') as file:
-        simulation = Simulation([init])
-        bar = Bar(min(simulation.volume))
-        for state in iter(simulation.update, None):
-            bar.advance(min(simulation.volume))
+    write_battle(init, file_name, "w")
+    simulation = Simulation([init])
+    bar = Bar(min(simulation.volume))
+    for state in iter(simulation.update, None):
+        bar.advance(min(simulation.volume))
+        write_battle(state, file_name, "a")
+    print()
 
-            file.write(f"{len(state)}\n")
-            for unit in state:
-                file.write(" ".join(map(str, [
-                    unit.strength,
-                    unit.reach,
-                    unit.speed,
-                    unit.health,
-                    unit.braveness,
-                    unit.time_fleeing,
-
-                    unit.side,
-                    *unit.coords,
-                    unit.is_centurion,
-
-                    unit.closer,
-                    unit.weaker,
-                    unit.stronger
-                ])))
-                file.write("\n")
-        print()

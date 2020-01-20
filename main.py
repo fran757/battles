@@ -18,7 +18,6 @@ from simulation import prepare_battle, make_battle
 
 def main():
     """Parse user input and start the simulation or launch GUI accordingly."""
-    Logger.init("logs.txt")
 
     if "-s" in sys.argv:
         print("generating simulation...")

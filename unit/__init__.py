@@ -15,6 +15,7 @@ class Factory:
     _registery = {}
 
     @classmethod
+    @tools(log="registered {name}")
     def register(cls, name, prototype):
         cls._registery[name] = prototype
 
@@ -28,8 +29,9 @@ class Factory:
         strat = Strategy(*strategy)
         return Unit(base, field, strat)
 
+
 Factory.register("infantry", UnitBase(4, 1.5, 1, 5))
 Factory.register("archer", UnitBase(8, 10., 1, 3))
-Factory.register("crossbow", UnitBase(100, 10., 1, 3, True))
-Factory.register("centurion", UnitBase(100, 1.5, 1, 1000, True))
+Factory.register("crossbow", UnitBase(100, 10., 1, 30))
+Factory.register("centurion", UnitBase(100, 1.5, 1, 100))
 Factory.register("special", UnitBase(10, 1.5, 100, 200))

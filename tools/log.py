@@ -9,7 +9,8 @@ class Logger(metaclass=Tool):
     Stores a generic message for a function, formatted with arguments and
     output before logging to file.
     """
-    file_name = "log.txt"
+    file_name = None
+
 
     @classmethod
     def init(cls, file_name):
@@ -41,3 +42,6 @@ def log(message):
             return output
         return wrapped
     return wrapper
+
+
+Logger.init("logs.txt")
