@@ -49,6 +49,9 @@ class ActionButtons(QWidget):
         self.zoom_in.clicked.connect(self.zoom)
         self.zoom_out.clicked.connect(self.zoom)
 
+        self.playpause.setCheckable(True)
+        self.playpause.setChecked(False)
+
         layout.addWidget(self.prev)
         layout.addWidget(self.playpause)
         layout.addWidget(self.next)
