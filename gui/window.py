@@ -5,6 +5,7 @@ from PyQt5.QtTest import QTest
 
 from .buttons import ActionButtons, InfoBox
 from .battlefield import Battlefield
+from .graph import GraphWidget
 import os
 
 
@@ -56,6 +57,7 @@ class MainWindow(QWidget):
         self.slide = QSlider(Qt.Horizontal)
         self.battlefield = Battlefield(path)
         self.info = InfoBox(self.battlefield.get_unit(0))
+        self.graph = GraphWidget(*self.battlefield.get_specs_tables())
         self.select = QComboBox()
         self.select.addItems(colormaps)
 
@@ -72,6 +74,7 @@ class MainWindow(QWidget):
         second_layout = QHBoxLayout()
         second_layout.addWidget(self.battlefield)
         second_layout.addWidget(self.info)
+        second_layout.addWidget(self.graph)
 
         layout.addLayout(second_layout)
         layout.addWidget(self.buttons)
@@ -93,7 +96,7 @@ class MainWindow(QWidget):
         self.info.generate.connect(self.instant_export)
         self.info.save_specs.connect(self.change_specs)
 
-        self.setGeometry(300, 300, self.battlefield.width()+150,
+        self.setGeometry(300, 300, self.battlefield.width()+300,
                          self.battlefield.height())
         self.show()
 
@@ -109,15 +112,18 @@ class MainWindow(QWidget):
     def instant_export(self):
         self.battlefield.instant_export()
         self.slide.setMaximum(self.battlefield.size)
+        self.graph.load_data(*self.battlefield.get_specs_tables())
 
     def load_from_file(self, path: str):
         self.battlefield.load_from_file(path)
         self.slide.setMaximum(self.battlefield.size)
-
+        self.graph.load_data(*self.battlefield.get_specs_tables())
+    
     def update(self, step_state: int):
         """
         To update the battlefield and the widgets
         """
+        self.graph.change_state(step_state)
         stop = self.battlefield.update(step_state)
         self.message.setText(
             "step "+str(self.battlefield.state+1)+"/"+str(self.battlefield.size))
@@ -129,6 +135,7 @@ class MainWindow(QWidget):
         """
         To move in the simulation
         """
+        self.graph.change_state(self.slide.value())
         self.battlefield.go_to_state(self.slide.value())
         self.info.change_unit(self.battlefield.get_unit(self.selected_unit))
         self.message.setText(

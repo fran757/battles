@@ -28,13 +28,8 @@ class Battlefield(QGraphicsView):
         self.selected_unit = 0
         self.edit = False
         self.simu = False
-        self.loading = QLabel()
 
         self.wait = False
-
-        gif_load = QMovie("gui/loading.gif")
-        self.loading.setMovie(gif_load)
-        gif_load.start()
 
         self.mousePressEvent = self.on_mousePressEvent
         self.mouseMoveEvent = self.on_mouseMoveEvent
@@ -44,6 +39,23 @@ class Battlefield(QGraphicsView):
         self.setScene(self.scene)
         self.show()
         self.draw()
+
+    def get_specs_tables(self):
+        SPECS = [ [[],[]], [[],[]], [[],[]]]
+
+        for i in range(self.size):
+            speci = [[0, 0], [0, 0], [0, 0], [0, 0]]
+            for unit in self.simulation.state(i):
+                speci[0][unit.side] += 1
+                speci[1][unit.side] += unit.health
+                speci[2][unit.side] += unit.strength
+                speci[3][unit.side] += unit.braveness
+
+            for j in range(3):
+                for k in range(2):
+                    SPECS[j][k].append(speci[j+1][k]/speci[0][k])
+        print(len(SPECS[0][0]))
+        return SPECS
 
     def load_from_file(self, path: str):
         self.simulation = Simulation(read_battle(path))
@@ -139,8 +151,8 @@ class Battlefield(QGraphicsView):
         def specs(unit):
             if not unit.is_centurion:
                 return [unit.health, unit.strength, unit.braveness]
-            else:
-                return [0,0,0]
+            return [0, 0, 0]
+
         max_val = max([specs(unit)[index] for unit in self.simulation.state(0)])
         shade = 150 * (specs(unit)[index] / max_val) + 105
         color = [0, 0, 0]
@@ -184,7 +196,11 @@ class Battlefield(QGraphicsView):
         if not(self.wait):
             self.wait = True
             self.scene.addRect(-10,-10, int(self.background.width()*(1+self.zoom_level)), int(self.background.height()*(1+self.zoom_level)), QPen(), QBrush(QColor(255, 255, 255)))
-            self.scene.addWidget(self.loading)
+            loading = QLabel()
+            gif_load = QMovie("gui/loading.gif")
+            loading.setMovie(gif_load)
+            gif_load.start()
+            self.scene.addWidget(loading)
             QTest.qWait(200)
             make_battle(self.simulation.state(self.state), name)
             QTest.qWait(200)
