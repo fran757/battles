@@ -5,6 +5,10 @@ from .tool import Tool
 
 
 class Cache(metaclass=Tool):
+    """Container mapping a function's output to its input to arguments,
+    avoiding repeating fastidious calculations.
+    Will reset records on command (when results are assumed to have changed).
+    """
     def __init__(self):
         self._records = {}
 
@@ -19,11 +23,14 @@ class Cache(metaclass=Tool):
 
     @classmethod
     def reset(cls):
-        for instance in cls._known.values():
+        for _, instance in cls.instances():
             instance.records = []
 
 
 def cache(fun):
+    """On each call to fun, try to get computed value from args,
+    otherwise compute and update records.
+    """
     @wraps(fun)
     def cached(*args):
         param = signature(fun).parameters

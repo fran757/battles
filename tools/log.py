@@ -5,16 +5,22 @@ from .tool import Tool
 
 
 class Logger(metaclass=Tool):
+    """Simple container with file writing functionality.
+    Stores a generic message for a function, formatted with arguments and
+    output before logging to file.
+    """
     file_name = "log.txt"
 
     @classmethod
     def init(cls, file_name):
+        """Indicate name of file to log to."""
         cls.file_name = file_name
         with open(file_name, "w"):
             pass
 
     @classmethod
     def log(cls, message):
+        """Write a (formatted) message to registered file."""
         if cls.file_name is None:
             print(message)
         else:
@@ -23,6 +29,7 @@ class Logger(metaclass=Tool):
 
 
 def log(message):
+    """Register custom message for function, format it on every call."""
     def wrapper(fun):
         @wraps(fun)
         def wrapped(*args, **kwargs):

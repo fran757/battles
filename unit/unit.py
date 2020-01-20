@@ -91,6 +91,7 @@ class Unit(UnitBase, UnitField, Strategy):
 
     @delay
     def adrenaline(self):
+        """If lucky, get a burst of adrenaline, otherwise stay fleeing."""
         if random() < .1:
             self.reset_braveness()
             self.speed *= 2

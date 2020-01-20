@@ -2,13 +2,14 @@ from dataclasses import dataclass
 
 @dataclass
 class Bar:
+    """Knowing estimated computation time (can be any unitless arbitrary value),
+    update a loading bar on each call given current remaining time.
+    """
     total: int
 
     def advance(self, remaining):
-        """stackoverflow.com/questions/3173320/text-progress-bar-in-the-console"""
+        """Print simple loading bar, just knowing remaining 'time'."""
         ratio = 1 - remaining / self.total
         progress = int(50 * ratio)
         bar = "█" * progress + "-" * (50 - progress)
         print(f"\rProgress: |{bar}| {ratio * 100:.1f}% Complete", end="\r")
-
-

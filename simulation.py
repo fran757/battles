@@ -20,11 +20,14 @@ class Simulation:
         return len(self.states)
 
     def state(self, i):
+        """Accessor for a specific state (step number i)."""
         return self.states[i]
 
     @property
     def units(self):
-        """Access units from latest state of the battle."""
+        """Access units from latest state of the battle.
+        Equivalent to state(self, -1).
+        """
         return self.states[-1]
 
     @property
@@ -42,14 +45,18 @@ class Simulation:
 
     @property
     def is_finished(self):
-        """Tell whether battle is over (one side has no health)."""
+        """Tell whether the battle is over (one side has no health)."""
         return np.all(self.volume)
 
 
 @tools(clock=True)
 def prepare_battle():
-    """Generate initial state of custom battle."""
-    strategies = [(1., 0.), (0., 1.)]
+    """Generate initial state of a custom battle.
+    Here we have on each side :
+    - 10 rows of 11 infantrymen, led by a centurion
+    - 1 row of 11 archers led by a crossbow, covering from behind.
+    """
+    strategies = [(1., 0.), (0., 1.)]  # each side has one uniform strategy
 
     def array(fun):
         return lambda *a: np.array(fun(*a), float)
@@ -103,7 +110,9 @@ def read_battle(file_name):
 
 @tools(clock=True)
 def make_battle(init, file_name: str):
-    """Generate battle from initial state and write it to file."""
+    """Generate battle from initial state and write it to file.
+    Will display a progress bar indicating health of losing army.
+    """
     with open(file_name, 'w') as file:
         simulation = Simulation([init])
         bar = Bar(min(simulation.volume))

@@ -33,6 +33,3 @@ Factory.register("archer", UnitBase(8, 10., 1, 3))
 Factory.register("crossbow", UnitBase(100, 10., 1, 3, True))
 Factory.register("centurion", UnitBase(100, 1.5, 1, 1000, True))
 Factory.register("special", UnitBase(10, 1.5, 100, 200))
-
-
-
