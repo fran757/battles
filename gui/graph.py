@@ -1,17 +1,18 @@
 from PyQt5.QtWidgets import QWidget, QLabel, QGraphicsView, QGraphicsScene, QVBoxLayout
 from PyQt5.QtGui import QPen, QColor
 import numpy as np
-
+import matplotlib.pyplot as plt
 
 class Graph(QGraphicsView):
     """
     To plot in red and blue two lists
     """
-    def __init__(self, R, B):
+    def __init__(self, title, R, B):
         super().__init__()
 
         self.R = R
         self.B = B
+        self.title = title
 
         self.width = 100
         self.height = 50
@@ -24,6 +25,8 @@ class Graph(QGraphicsView):
         
         self.step = self.height/max(max(R), max(B))
         self.state_step = self.width/len(R)
+
+        self.mousePressEvent = self.on_mousePressEvent
 
         self.setMinimumWidth(self.width+2)
         self.setMaximumWidth(self.width+2)
@@ -61,6 +64,14 @@ class Graph(QGraphicsView):
         self.state_step = self.width/len(RED)
         self.draw_curves()
 
+    def on_mousePressEvent(self, event):
+        plt.title(self.title+" over time")
+        plt.xlabel("step of the simulation")
+        plt.ylabel("average "+self.title)
+        plt.plot(self.R,'r')
+        plt.plot(self.B,'b')
+        plt.show()
+
 class GraphWidget(QWidget):
     """
     The graphs on the side of the window
@@ -70,9 +81,9 @@ class GraphWidget(QWidget):
 
         layout = QVBoxLayout()
 
-        self.health = Graph(*HEALTH)
-        self.strength = Graph(*STRENGTH)
-        self.brave = Graph(*BRAVE)
+        self.health = Graph("health", *HEALTH)
+        self.strength = Graph("strength", *STRENGTH)
+        self.brave = Graph("braveness", *BRAVE)
 
         layout.addWidget(QLabel("health: "))
         layout.addWidget(self.health)
