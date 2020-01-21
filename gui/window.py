@@ -73,11 +73,11 @@ class MainWindow(QWidget):
 
         second_layout = QHBoxLayout()
         third_layout = QVBoxLayout()
-        
+
         third_layout.addWidget(self.battlefield)
         third_layout.addWidget(self.buttons)
 
-        second_layout.addLayout(third_layout) 
+        second_layout.addLayout(third_layout)
         second_layout.addWidget(self.info)
         second_layout.addWidget(self.graph)
 

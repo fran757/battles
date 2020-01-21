@@ -1,0 +1,5 @@
+registered infantry
+registered archer
+registered crossbow
+registered centurion
+registered special
