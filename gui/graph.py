@@ -65,6 +65,7 @@ class Graph(QGraphicsView):
         self.draw_curves()
 
     def on_mousePressEvent(self, event):
+        plt.ion()
         plt.title(self.title+" over time")
         plt.xlabel("step of the simulation")
         plt.ylabel("average "+self.title)
