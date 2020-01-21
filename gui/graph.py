@@ -27,6 +27,7 @@ class Graph(QGraphicsView):
 
         self.setMinimumWidth(self.width+2)
         self.setMinimumHeight(self.height)
+        self.setMaximumHeight(self.height+2)
 
     def draw_curves(self):
         self.scene.addRect(0, 0, self.width, self.height,
