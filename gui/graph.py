@@ -30,10 +30,10 @@ class Graph(QGraphicsView):
 
     def draw_curves(self):
         self.scene.addRect(0, 0, self.width, self.height,
-                           QPen(), QColor(255, 255, 255))
-        self.scene.addRect(self.current_state*self.state_step, 0,
-                           self.state_step, self.height,
-                           QPen(), QColor(175, 198, 129))
+                           QPen(QColor(255, 255, 255)), QColor(255, 255, 255))
+        self.scene.addLine(self.current_state*self.state_step, 0,
+                           self.current_state*self.state_step, self.height,
+                           QPen())
 
         for i in range(1,len(self.R)):
 

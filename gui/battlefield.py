@@ -54,7 +54,6 @@ class Battlefield(QGraphicsView):
             for j in range(3):
                 for k in range(2):
                     SPECS[j][k].append(speci[j+1][k]/speci[0][k])
-        print(len(SPECS[0][0]))
         return SPECS
 
     def load_from_file(self, path: str):
