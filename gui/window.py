@@ -69,11 +69,11 @@ class MainWindow(QWidget):
         self.setWindowTitle("Battles")
 
         layout.addWidget(self.menu)
-        layout.addWidget(self.select)
 
         second_layout = QHBoxLayout()
         third_layout = QVBoxLayout()
 
+        third_layout.addWidget(self.select)
         third_layout.addWidget(self.battlefield)
         third_layout.addWidget(self.buttons)
 
