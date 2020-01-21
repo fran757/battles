@@ -26,6 +26,7 @@ class Graph(QGraphicsView):
         self.state_step = self.width/len(R)
 
         self.setMinimumWidth(self.width+2)
+        self.setMaximumWidth(self.width+2)
         self.setMinimumHeight(self.height)
         self.setMaximumHeight(self.height+2)
 
