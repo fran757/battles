@@ -21,11 +21,6 @@ class Cache(metaclass=Tool):
     def __setitem__(self, arg, value):
         self._records[id(arg)] = value
 
-    @classmethod
-    def reset(cls):
-        for _, instance in cls.instances():
-            instance.records = []
-
 
 def cache(fun):
     """On each call to fun, try to get computed value from args,

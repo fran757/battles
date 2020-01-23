@@ -22,19 +22,19 @@ class Unit(UnitBase, UnitField, Strategy):
                 setattr(self, name, value)
 
     @tools(clock=True)
-    def decide(self, all_units):
+    def decide(self, info):
         """Take a decision based on all other units on the field.
         Flee or focus on an enemy, then update braveness."""
-        others = [unit for unit in all_units if not unit.is_dead]
-        allies = list(filter(self.is_ally, others))
-        enemies = list(filter(self.is_enemy, others))
-
-        if not enemies or self.is_dead:
+        if not info.enemies or self.is_dead:
             return delay(lambda: None)()
 
-        action = (self.flee if self.is_fleeing else self.focus)(enemies)
-        moral = self.moral_update(allies, enemies)
-        return action + moral
+        action = self.moral_update(info.leader, info.remote, info.ratio)
+        if self.is_fleeing:
+            action += self.flee(info.barycenter)
+        else:
+            action += self.focus(info.enemies)
+        return action
+
 
     @tools(clock=True)
     def focus(self, enemies):
@@ -55,30 +55,20 @@ class Unit(UnitBase, UnitField, Strategy):
         return self.move(self.direction(target.coords))
 
     @tools(clock=True)
-    def flee(self, enemies):
+    def flee(self, enemy):
         """Run away, and maybe come back stronger."""
-        barycenter = [np.mean([e.coords[i] for e in enemies]) for i in (0, 1)]
-        return self.adrenaline() + self.move(-self.direction(barycenter))
+        return self.adrenaline() + self.move(-self.direction(enemy))
 
     @tools(clock=True)
-    def moral_update(self, allies, enemies):
+    def moral_update(self, leader, remote, ratio):
         """If a centurion is close, be brave.
         Puss out if enemies are far.
         """
-        for ally in [self] + allies:
-            if ally.is_centurion and self.distance(ally) < 5:
-                return delay(self.reset_braveness)()
+        if leader is not None and self.distance(leader) < 5:
+            return delay(self.reset_braveness)()
 
-        @tools(cache=True, clock=True)
-        def distance_to_enemies(unit):
-            return sum(map(unit.distance, enemies))
-
-        remote = distance_to_enemies(self)
-        remote_side = list(map(distance_to_enemies, allies)) + [remote]
-        coeff = sorted(remote_side).index(remote) / len(remote_side)
-        m_1 = int(5 * (1 - 3 * coeff))  # todo: wth do these mean
-        coeff_2 = len(allies) / len(enemies)
-        m_2 = int(5 * ((3 / 2) * coeff_2 - 1))
+        m_1 = int(5 * (1 - 3 * remote))
+        m_2 = int(5 * ((3 / 2) * ratio))
         return delay(self.change_moral)(m_1 + m_2)
 
     @delay
@@ -96,7 +86,7 @@ class Unit(UnitBase, UnitField, Strategy):
             self.reset_braveness()
             self.speed *= 2
             self.strength *= 2
-
-        self.time_fleeing += 1
-        if self.time_fleeing == 5:
-            self.health = 0
+        else:
+            self.time_fleeing += 1
+            if self.time_fleeing == 5:
+                self.health = 0

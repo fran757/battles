@@ -11,7 +11,6 @@ import sys
 from PyQt5.QtWidgets import QApplication
 
 from tools.timer import clock_report
-from tools.log import Logger
 from gui import MainWindow
 from simulation import prepare_battle, make_battle
 
@@ -20,10 +19,15 @@ def main():
     """Parse user input and start the simulation or launch GUI accordingly."""
 
     if "-s" in sys.argv:
-        print("generating simulation...")
-        make_battle(prepare_battle(), "save.txt")
-        print("done !")
-        clock_report()
+        try:
+            print("generating simulation...")
+            make_battle(prepare_battle(), "save.txt")
+            print("done !")
+        except KeyboardInterrupt:
+            return  # would not be able to read battle file
+        finally:
+            clock_report()
+
     if "-a" not in sys.argv:
         app = QApplication([])
         window = MainWindow("save.txt")

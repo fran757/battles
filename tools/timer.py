@@ -1,45 +1,38 @@
 from functools import wraps
 from time import time
 
-from .tool import Tool
 
+records = ({}, [])
+scope = []
 
-class Clock(metaclass=Tool):
-    """Register duration of every function call,
-    provide results when asked for a report.
-    """
-    def __init__(self):
-        self._records = []
-
-    def record(self, value):
-        """Append value to records."""
-        self._records.append(value)
-
-    @classmethod
-    def report(cls):
-        """Return total time taken by function, and number of calls."""
-        records = {}
-        for name, instance in cls.instances():
-            record = instance._records
-            records.update({name: (len(record), sum(record))})
-        return records
+def record(value):
+    r = records
+    for name in scope:
+        try:
+            r = r[0][name]
+        except KeyError:
+            r[0][name] = ({}, [])
+            r = r[0][name]
+    r[1].append(value)
 
 
 def clock(fun):
-    """Register fun's execution times."""
     @wraps(fun)
     def timed(*args, **kwargs):
         before = time()
+        scope.append(f"{fun.__qualname__}")
         value = fun(*args, **kwargs)
         now = time()
-        Clock[fun].record(now - before)
+        record(now - before)
+        scope.pop()
         return value
-
     return timed
 
-
 def clock_report():
-    """Provide all timing records."""
-    print("Clock report :")
-    for name, (count, total) in Clock.report().items():
-        print(f"{name} (x{count}): {total:.3f} s")
+    def aux(tab, name, record):
+        count, total = len(record[1]), sum(record[1])
+        print(tab * "  " + f"{name:<{50-2*tab}} (x{count:<5}): {total:.3f} s")
+        for name, rec in record[0].items():
+            aux(tab + 1, name, rec)
+    for name, rec in records[0].items():
+        aux(0, name, rec)

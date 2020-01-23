@@ -5,14 +5,14 @@ from itertools import islice
 from typing import List
 import numpy as np
 
-from unit import Factory, Unit, UnitBase, UnitField, Strategy
-from tools import tools, Cache, Bar
+from unit import Factory, Unit, UnitBase, UnitField, Strategy, Centurion
+from tools import tools, Bar
 
 
 @dataclass
 class Simulation:
     """Container for successive steps of a battle."""
-    states: List[List[Unit]]
+    states: List[List["Centurion"]]
 
     @property
     def size(self):
@@ -21,7 +21,10 @@ class Simulation:
 
     def state(self, i):
         """Accessor for a specific state (step number i)."""
-        return self.states[i]
+        units = []
+        for side in self.states[i]:
+            units += side.units
+        return units
 
     @property
     def units(self):
@@ -33,17 +36,17 @@ class Simulation:
     @property
     def volume(self):
         """Total health on each side."""
-        return [sum([u.health for u in self.units if u.side == s]) for s in (0, 1)]
+        return [s.health for s in self.states[-1]]
 
-    @tools(log="Armies' health: {self.volume}")
+    @tools(clock=True, log="Armies' health: {self.volume}")
     def update(self):
         """Generate and append new state to simulation."""
         if self.is_finished:
             return None
-        Cache.reset()
-        self.states.append(deepcopy(self.units))
-        sum((unit.decide(self.units) for unit in self.units), None)()
-        return self.units
+        self.states.append(deepcopy(self.states[-1]))
+        side1, side2 = self.states[-1]  # todo: clean this up
+        (side1.decide(side2) + side2.decide(side1))()
+        return self.states[-1]
 
     @property
     def is_finished(self):
@@ -58,29 +61,29 @@ def prepare_battle():
     - 10 rows of 11 infantrymen, led by a centurion
     - 1 row of 11 archers led by a crossbow, covering from behind.
     """
-    strategies = [(1., 0.), (0., 1.)]  # each side has one uniform strategy
+    strategies = [(1., 0.), (1., 1.)]  # each side has one uniform strategy
 
     def array(fun):
         return lambda *a: np.array(fun(*a), float)
     positions = map(array, [lambda i, j: (i, j), lambda i, j: (30 - i, j)])
 
-    units = []
+    centurions = []
     for side, (position, strategy) in enumerate(zip(positions, strategies)):
         factory = Factory(side)
-        for j in range(-5, 16, 2):
-            units.append(factory("archer", position(-5, j), strategy))
+        for i, j in np.indices((2, 11)).reshape((2, -1)).T:
+            factory("archer", position(-5+i, j), strategy)
         for i, j in np.indices((10, 11)).reshape((2, -1)).T:
-            units.append(factory("infantry", position(i, j), strategy))
-        units.append(factory("centurion", position(10, 5), strategy, True))
-        units.append(factory("crossbow", position(-4, 5), strategy, True))
-    return units
+            factory("infantry", position(i, j), strategy)
+        factory("centurion", position(10, 5), strategy, True)
+        factory("crossbow", position(-4, 5), strategy, True)
+        centurions.append(factory.centurion)
+    return centurions
 
 
 @tools(clock=True)
 def read_battle(file_name):
     """Parse file for successive steps of a battle."""
     with open(file_name, 'r') as file:
-        states = []
         types = [int, float, lambda x: {"True": True, "False": False}[x]]
         base_cast = [0, 1, 0, 0, 0, 0]
         coord_cast = [1, 1]
@@ -90,10 +93,11 @@ def read_battle(file_name):
         def cast(values, index):
             return [types[i](values.pop(0)) for i in index]
 
+        states = []
         status = file.readline().split()
         while status:
             state = islice(file, int(status[0]))
-            units = []
+            sides = [[], []]
             for line in state:
                 unit = line.split(" ")
                 base = UnitBase(*cast(unit, base_cast))
@@ -104,14 +108,18 @@ def read_battle(file_name):
 
                 strat = Strategy(*cast(unit, strat_cast))
 
-                units.append(Unit(base, field, strat))
-            states.append(units)
+                sides[field.side].append(Unit(base, field, strat))
+            states.append([Centurion(units) for units in sides])
             status = file.readline().split()
         return states
 
 
-def write_battle(units, file_name, mode):
+def write_battle(sides, file_name, mode):
+    """Write given both sides of a battle to file.
+    mode tells whether to append or overwrite file.
+    """
     with open(file_name, mode) as file:
+        units = sum([side.units for side in sides], [])
         file.write(f"{len(units)}\n")
         for unit in units:
             assert unit.braveness is not True
@@ -146,4 +154,3 @@ def make_battle(init, file_name: str):
         bar.advance(min(simulation.volume))
         write_battle(state, file_name, "a")
     print()
-
