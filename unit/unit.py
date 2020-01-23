@@ -76,9 +76,11 @@ class Unit(UnitBase, UnitField, Strategy):
         remote = distance_to_enemies(self)
         remote_side = list(map(distance_to_enemies, allies)) + [remote]
         coeff = sorted(remote_side).index(remote) / len(remote_side)
-        m_1 = int(5 * (1 - 3 * coeff))  # todo: wth do these mean
+        m_1 = int(5 * (1 - 3 * coeff))
+        # the farther an unit is from enemies, the more moral damage it takes
         coeff_2 = len(allies) / len(enemies)
         m_2 = int(5 * ((3 / 2) * coeff_2 - 1))
+        # moral damage for the losing side
         return delay(self.change_moral)(m_1 + m_2)
 
     @delay
