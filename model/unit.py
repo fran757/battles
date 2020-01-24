@@ -48,8 +48,7 @@ class Unit(UnitBase, UnitField, Strategy):
 
             return close + weak + strong
 
-        # target = sorted(enemies, key=criteria)[0]
-        target = enemies[np.argmin(map(criteria, enemies))]
+        target = enemies[np.argmin(np.array(map(criteria, enemies)))]
 
         if self.distance(target) <= self.reach:
             return self.attack(target)
