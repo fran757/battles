@@ -50,10 +50,13 @@ class Army(UnitField):
         ranked = sorted(self.units, key=enemy.distance)
         ratio = len(self.units) / len(enemy.units)
         enemies = [u for u in enemy.units if not u.is_dead]
+        distance_to_enemies = [enemy.distance(self) for enemy in enemies]
+        distance_to_enemies = distance_to_enemies/sum(distance_to_enemies) # Normalizing
         action = None
 
         for rank, unit in enumerate(ranked):
             remote = rank / len(ranked)
+
             info = Info(centurion, remote, ratio, enemy.coords, enemies)
             action += unit.decide(info)
         self._coords = None
