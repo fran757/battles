@@ -4,7 +4,7 @@ from PyQt5.QtGui import QPen, QColor, QBrush, QPixmap, QMovie
 from PyQt5.QtTest import QTest
 import numpy as np
 
-from simulation import Simulation, read_battle, make_battle
+from control import Simulation, read_battle, make_battle
 
 
 class Battlefield(QGraphicsView):
@@ -45,7 +45,7 @@ class Battlefield(QGraphicsView):
 
         for i in range(self.size):
             speci = [[0, 0], [0, 0], [0, 0], [0, 0]]
-            for unit in self.simulation.state(i):
+            for unit in self.simulation.units(i):
                 speci[0][unit.side] += 1
                 speci[1][unit.side] += unit.health
                 speci[2][unit.side] += unit.strength
@@ -83,7 +83,7 @@ class Battlefield(QGraphicsView):
 
     def get_unit(self, index: int):
         """Access specific unit."""
-        return self.simulation.state(self._state)[index]
+        return self.simulation.units(self._state)[index]
 
     @property
     def size(self):
@@ -134,7 +134,7 @@ class Battlefield(QGraphicsView):
             pos = self.mapToScene(event.pos())
             new_x = (pos.x()/(self.zoom_level*self.unit_size))-10
             new_y = (pos.y()/(self.zoom_level*self.unit_size))-10
-            self.simulation.state(self.state)[self.selected_unit].coords = np.array([new_x, new_y])
+            self.simulation.units(self.state)[self.selected_unit].coords = np.array([new_x, new_y])
             self.draw()
             if self.simu:
                 self.instant_export()
@@ -152,7 +152,7 @@ class Battlefield(QGraphicsView):
                 return [unit.health, unit.strength, unit.braveness]
             return [0, 0, 0]
 
-        max_val = max([specs(unit)[index] for unit in self.simulation.state(0)])
+        max_val = max([specs(unit)[index] for unit in self.simulation.units(0)])
         shade = 150 * (specs(unit)[index] / max_val) + 105
         color = [0, 0, 0]
         color[2 * unit.side] = shade
@@ -176,7 +176,7 @@ class Battlefield(QGraphicsView):
         self.draw_image(self.background)
 
         # shuffle so that we also see blue units
-        state = self.simulation.state(self.state)
+        state = self.simulation.units(self.state)
         for unit in state:
             if not unit.is_dead:
                 if not unit.is_centurion:
@@ -208,5 +208,5 @@ class Battlefield(QGraphicsView):
 
     def instant_export(self):
         if not(self.wait):
-            self.export("new.txt")
-            self.load_from_file("new.txt")
+            self.export("data/new.txt")
+            self.load_from_file("data/new.txt")

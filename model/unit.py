@@ -2,8 +2,9 @@ from random import random
 import numpy as np
 
 from tools import tools
-from delay import delay
+import control
 
+from .order import delay
 from .base import UnitBase
 from .field import UnitField
 from .strategy import Strategy
@@ -48,7 +49,7 @@ class Unit(UnitBase, UnitField, Strategy):
 
             return close + weak + strong
 
-        target = enemies[np.argmin(np.array(map(criteria, enemies)))]
+        target = enemies[np.argmin(list(map(criteria, enemies)))]
 
         if self.distance(target) <= self.reach:
             return self.attack(target)

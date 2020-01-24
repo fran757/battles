@@ -44,4 +44,4 @@ def log(message):
     return wrapper
 
 
-Logger.init("logs.txt")
+Logger.init("data/logs.txt")

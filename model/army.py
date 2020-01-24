@@ -40,7 +40,7 @@ class Army(UnitField):
     def decide(self, enemy):
         """Compute useful info and pass it to each unit's decision logic."""
         dist = enemy.distance(self)
-        tools(log=f"{dist}")()
+        # tools(log=f"{dist:.3}")()
 
         centurion = None
         for unit in self.units:
