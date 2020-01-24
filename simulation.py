@@ -5,14 +5,14 @@ from itertools import islice
 from typing import List
 import numpy as np
 
-from unit import Factory, Unit, UnitBase, UnitField, Strategy, Centurion
+from unit import Factory, Unit, UnitBase, UnitField, Strategy, Army
 from tools import tools, Bar
 
 
 @dataclass
 class Simulation:
     """Container for successive steps of a battle."""
-    states: List[List["Centurion"]]
+    states: List[List[Army]]
 
     @property
     def size(self):
@@ -67,7 +67,7 @@ def prepare_battle():
         return lambda *a: np.array(fun(*a), float)
     positions = map(array, [lambda i, j: (i, j), lambda i, j: (30 - i, j)])
 
-    centurions = []
+    armies = []
     for side, (position, strategy) in enumerate(zip(positions, strategies)):
         factory = Factory(side)
         for i, j in np.indices((2, 11)).reshape((2, -1)).T:
@@ -76,8 +76,8 @@ def prepare_battle():
             factory("infantry", position(i, j), strategy)
         factory("centurion", position(10, 5), strategy, True)
         factory("crossbow", position(-4, 5), strategy, True)
-        centurions.append(factory.centurion)
-    return centurions
+        armies.append(factory.army)
+    return armies
 
 
 @tools(clock=True)
@@ -109,7 +109,7 @@ def read_battle(file_name):
                 strat = Strategy(*cast(unit, strat_cast))
 
                 sides[field.side].append(Unit(base, field, strat))
-            states.append([Centurion(units) for units in sides])
+            states.append([Army(units) for units in sides])
             status = file.readline().split()
         return states
 

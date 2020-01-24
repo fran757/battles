@@ -28,7 +28,7 @@ class Unit(UnitBase, UnitField, Strategy):
         if not info.enemies or self.is_dead:
             return delay(lambda: None)()
 
-        action = self.moral_update(info.leader, info.remote, info.ratio)
+        action = self.moral_update(info.centurion, info.remote, info.ratio)
         if self.is_fleeing:
             action += self.flee(info.barycenter)
         else:
@@ -48,7 +48,8 @@ class Unit(UnitBase, UnitField, Strategy):
 
             return close + weak + strong
 
-        target = sorted(enemies, key=criteria)[0]
+        # target = sorted(enemies, key=criteria)[0]
+        target = enemies[np.argmin(map(criteria, enemies))]
 
         if self.distance(target) <= self.reach:
             return self.attack(target)
@@ -60,11 +61,11 @@ class Unit(UnitBase, UnitField, Strategy):
         return self.adrenaline() + self.move(-self.direction(enemy))
 
     @tools(clock=True)
-    def moral_update(self, leader, remote, ratio):
+    def moral_update(self, centurion, remote, ratio):
         """If a centurion is close, be brave.
         Puss out if enemies are far.
         """
-        if leader is not None and self.distance(leader) < 5:
+        if centurion is not None and self.distance(centurion) < 5:
             return delay(self.reset_braveness)()
 
         m_1 = int(5 * (1 - 3 * remote))

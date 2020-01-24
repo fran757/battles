@@ -5,7 +5,7 @@ from .base import UnitBase
 from .field import UnitField
 from .strategy import Strategy
 from .unit import Unit
-from .centurion import Centurion
+from .army import Army
 
 from tools import tools
 
@@ -22,8 +22,8 @@ class Factory:
         cls._registery[name] = prototype
 
     @property
-    def centurion(self):
-        return Centurion(self.units)
+    def army(self):
+        return Army(self.units)
 
     def __call__(self, name, coords, strategy, is_centurion = False):
         try:
