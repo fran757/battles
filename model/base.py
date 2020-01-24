@@ -38,4 +38,4 @@ class UnitBase:
 
     def change_moral(self, value):
         """Add given value (can be negative) to unit braveness."""
-        self.braveness += value
+        self.braveness = min(self.braveness + value, 100)
