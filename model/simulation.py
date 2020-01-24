@@ -4,8 +4,9 @@ from dataclasses import dataclass
 from typing import List
 import numpy as np
 
-from model import Factory, Unit, UnitBase, UnitField, Strategy, Army
-from tools import tools, Bar
+from tools import tools
+
+from .army import Army
 
 
 @dataclass
@@ -38,9 +39,11 @@ class Simulation:
         """Generate and append new state to simulation."""
         if self.is_finished:
             return None
-        self.states.append(deepcopy(self.states[-1]))
-        side1, side2 = self.states[-1]  # todo: clean this up
-        (side1.decide(side2) + side2.decide(side1))()
+        new_state = deepcopy(self.states[-1])
+        self.states.append(new_state)
+
+        ways = new_state, reversed(new_state)
+        sum([army.decide(enemy) for army, enemy in zip(*ways)], None)()
         return self.states[-1]
 
     @property

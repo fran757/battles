@@ -7,33 +7,28 @@ Options :
     -s : run the simulation
 """
 
+import os
 import sys
-import os.path
-from PyQt5.QtWidgets import QApplication
 
-from tools.timer import clock_report
-from gui import MainWindow
-from control import prepare_battle, make_battle
+import tools, model, control, gui
+
+
+def init():
+    os.makedirs("data", exist_ok=True)
+    tools.Logger.init("data/log.txt")
+    model.load("model/base.json")
 
 
 def main():
     """Parse user input and start the simulation or launch GUI accordingly."""
+    init()
     save_file = "data/save.txt"
 
     if "-s" in sys.argv or not os.path.exists(save_file):
-        try:
-            print("generating simulation...")
-            make_battle(prepare_battle(), save_file)
-            print("done !")
-        except KeyboardInterrupt:
-            return  # would not be able to read battle file
-        finally:
-            clock_report()
+        control.main(save_file)
 
     if "-a" not in sys.argv:
-        app = QApplication([])
-        window = MainWindow(save_file)
-        sys.exit(app.exec_())
+        gui.main(save_file)
 
 
 if __name__ == "__main__":

@@ -1,9 +1,8 @@
 import numpy as np
 
-from model import Factory
+from model import Factory, Simulation
 from tools import tools, Bar
 from .parse import write_battle
-from .simulation import Simulation
 
 
 @tools(clock=True)
@@ -39,8 +38,8 @@ def make_battle(init, file_name: str):
     """
     write_battle(init, file_name, "w")
     simulation = Simulation([init])
-    bar = Bar(min(simulation.volume))
+    progress = Bar(min(simulation.volume))
     for state in iter(simulation.update, None):
-        bar.advance(min(simulation.volume))
+        progress.advance(min(simulation.volume))
         write_battle(state, file_name, "a")
     print()

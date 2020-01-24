@@ -1,7 +1,7 @@
 from itertools import islice
 import numpy as np
 
-from model import Army, Strategy, Unit, UnitBase, UnitField, Strategy
+from model import Simulation, Army, Unit, UnitBase, UnitField, Strategy
 from tools import tools
 
 
@@ -36,7 +36,7 @@ def read_battle(file_name):
                 sides[field.side].append(Unit(base, field, strat))
             states.append([Army(units) for units in sides])
             status = file.readline().split()
-        return states
+        return Simulation(states)
 
 
 def write_battle(sides, file_name, mode):
