@@ -2,7 +2,6 @@ from random import random
 import numpy as np
 
 from tools import tools
-import control
 
 from .order import delay
 from .base import UnitBase

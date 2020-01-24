@@ -42,6 +42,3 @@ def log(message):
             return output
         return wrapped
     return wrapper
-
-
-Logger.init("data/logs.txt")

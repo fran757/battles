@@ -4,7 +4,7 @@ from PyQt5.QtGui import QPen, QColor, QBrush, QPixmap, QMovie
 from PyQt5.QtTest import QTest
 import numpy as np
 
-from control import Simulation, read_battle, make_battle
+from control import read_battle, make_battle
 
 
 class Battlefield(QGraphicsView):
@@ -57,7 +57,7 @@ class Battlefield(QGraphicsView):
         return SPECS
 
     def load_from_file(self, path: str):
-        self.simulation = Simulation(read_battle(path))
+        self.simulation = read_battle(path)
         self._state = 0
         self._size = self.simulation.size
 
@@ -108,7 +108,7 @@ class Battlefield(QGraphicsView):
     def on_mousePressEvent(self, event):
         pos = self.mapToScene(event.pos())
         click = np.array((pos.x(), pos.y()))
-        for i, unit in enumerate(self.simulation.state(self.state)):
+        for i, unit in enumerate(self.simulation.units(self.state)):
             unit_pos = self.unit_position(unit)
             if np.all(unit_pos <= click) and np.all(click <= unit_pos + self.unit_size):
                 self.click.emit(i)
@@ -160,7 +160,7 @@ class Battlefield(QGraphicsView):
 
     def draw_unit(self, unit, pen, brush):
         position = self.unit_position(unit)
-        if unit.reach == 10:
+        if unit.reach >= 5:
             self.scene.addEllipse(*position, *[self.unit_size] * 2, pen, brush)
         else:
             self.scene.addRect(*position, *[self.unit_size] * 2, pen, brush)

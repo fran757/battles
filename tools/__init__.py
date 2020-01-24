@@ -7,7 +7,7 @@ Provide a simple progress bar for longer processes."""
 
 from .timer import clock as _clock, clock_report
 from .cache import cache as _cache, Cache
-from .log import log as _log
+from .log import log as _log, Logger
 from .progress import Bar
 
 
