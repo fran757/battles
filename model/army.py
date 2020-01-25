@@ -52,7 +52,7 @@ class Army(UnitField):
         ratio = len(self.units) / len(enemy_army.units)
         enemies = [u for u in enemy_army.units if not u.is_dead]
         action = None
-        sum_health = sum([enemy.health for enemy in enemies])
+        sum_health = enemy_army.health
         for rank, unit in enumerate(ranked):
             remote = rank / len(ranked)
             sum_distances = sum([enemy.distance(unit) for enemy in enemies])
