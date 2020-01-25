@@ -20,6 +20,7 @@ class Info:
 
 class Army(UnitField):
     """Abstract unit controlling an army, for computing centralization."""
+
     def __init__(self, units):
         self.units = units
         self._coords = None
@@ -37,27 +38,23 @@ class Army(UnitField):
         return self._coords
 
     @tools(clock=True)
-    def decide(self, enemy):
+    def decide(self, enemy_army):
         """Compute useful info and pass it to each unit's decision logic."""
-        dist = enemy.distance(self)
-        # tools(log=f"{dist:.3}")()
-
         centurion = None
         for unit in self.units:
             if unit.is_centurion:
                 centurion = unit
                 break
-        ranked = sorted(self.units, key=enemy.distance)
-        ratio = len(self.units) / len(enemy.units)
-        enemies = [u for u in enemy.units if not u.is_dead]
-        distance_to_enemies = [enemy.distance(self) for enemy in enemies]
-        distance_to_enemies = distance_to_enemies/sum(distance_to_enemies) # Normalizing
+        ranked = sorted(
+            self.units, key=lambda u: enemy_army.distance(u)/u.reach)
+        ratio = len(self.units) / len(enemy_army.units)
+        enemies = [u for u in enemy_army.units if not u.is_dead]
         action = None
 
         for rank, unit in enumerate(ranked):
             remote = rank / len(ranked)
 
-            info = Info(centurion, remote, ratio, enemy.coords, enemies)
+            info = Info(centurion, remote, ratio, enemy_army.coords, enemies)
             action += unit.decide(info)
         self._coords = None
         return action
