@@ -32,24 +32,18 @@ class Unit(UnitBase, UnitField, Strategy):
         if self.is_fleeing:
             action += self.flee(info.barycenter)
         else:
-            action += self.focus(info.enemies)
+            action += self.focus(info.enemies, info.sum_health, info.sum_distances)
         return action
 
 
     @tools(clock=True)
-    def focus(self, enemies):
+    def focus(self, enemies, sum_health, sum_distances):
         """Choose targetted unit based on strategy parameters.
         If close enough attack, else move closer.
         """
-        #remaining_health = [enemy.health for enemy in enemies]
-        #sum_health = sum(remaining_health)
-        #remaining_health = [health/sum_health for health in remaining_health]
-        #distance_from_enemy = [enemy.distance(self) for enemy in enemies]
-        #sum_distance = sum(distance_from_enemy)
-        #distance_from_enemy = [distance/sum_distance for distance in distance_from_enemy]
         def criteria(other):
-            close = self.closer * other.distance(self)
-            weak = self.weaker * other.health
+            close = self.closer * other.distance(self)/sum_distances
+            weak = self.weaker * other.health/sum_health
 
             return close + weak
 
@@ -71,12 +65,12 @@ class Unit(UnitBase, UnitField, Strategy):
         """
         if centurion is not None and self.distance(centurion) < 3:
             return delay(self.reset_braveness)()
-        a_1 = 15 # Moral damage taken by the furthest unit from the battlefield
-        b_1 = 10 # Moral increase for the closest unit from the battlefield
-        m_1 = -(a_1 + b_1) * remote + b_1
+        a_1 = 15 # Moral damage taken by the furthest unit from the enemies
+        b_1 = 10 # Moral increase for the closest unit from the enemies
+        m_1 = int(-(a_1 + b_1) * remote + b_1)
         a_2 = 15 # Moral damage is enemy army is way larger
-        b_2 = 15 # Moral increase if enemy army is way smaller
-        m_2 = a_2 - - (a_2 + b_2) * (a_2/(a_2 + b_2))**ratio
+        b_2 = 10 # Moral increase if enemy army is way smaller
+        m_2 = int(a_2 - (a_2 + b_2) * (a_2/(a_2 + b_2))**ratio)
         return delay(self.change_moral)(m_1 + m_2)
 
     @delay
@@ -90,7 +84,7 @@ class Unit(UnitBase, UnitField, Strategy):
     @delay
     def adrenaline(self):
         """If lucky, get a burst of adrenaline, otherwise stay fleeing."""
-        if random() < .08:
+        if random() < .1:
             self.reset_braveness()
             self.speed *= 2
             self.strength *= 2

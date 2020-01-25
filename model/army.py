@@ -16,6 +16,8 @@ class Info:
     ratio: float
     barycenter: np.ndarray
     enemies: List["Unit"]  # todo: just give target ?
+    sum_health: int
+    sum_distances: float
 
 
 class Army(UnitField):
@@ -50,11 +52,12 @@ class Army(UnitField):
         ratio = len(self.units) / len(enemy_army.units)
         enemies = [u for u in enemy_army.units if not u.is_dead]
         action = None
-
+        sum_health = sum([enemy.health for enemy in enemies])
         for rank, unit in enumerate(ranked):
             remote = rank / len(ranked)
-
-            info = Info(centurion, remote, ratio, enemy_army.coords, enemies)
+            sum_distances = sum([enemy.distance(unit) for enemy in enemies])
+            info = Info(centurion, remote, ratio, enemy_army.coords,
+                        enemies, sum_health, sum_distances)
             action += unit.decide(info)
         self._coords = None
         return action
