@@ -1,5 +1,6 @@
 """Set up and run Simulation, read and write to file."""
-import os, sys
+import os
+import sys
 
 from tools import clock_report
 

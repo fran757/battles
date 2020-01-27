@@ -1,9 +1,10 @@
+"""Unit decision centralization with broadcast communication."""
 from dataclasses import dataclass
 from typing import List
 import numpy as np
 
-from .unit import UnitField
 from tools import tools
+from .unit import UnitField
 
 
 @dataclass

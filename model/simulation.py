@@ -1,4 +1,4 @@
-"""Run and manage simulations, file I/O."""
+"""Container and controller for successive battle steps."""
 from copy import deepcopy
 from dataclasses import dataclass
 from typing import List
@@ -27,6 +27,7 @@ class Simulation:
         return units
 
     def state(self, i):
+        """Provide both sides of given battle state."""
         return self.states[i]
 
     @property

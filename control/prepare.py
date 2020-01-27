@@ -1,3 +1,4 @@
+"""Custom battle preparation and simulation loop."""
 import numpy as np
 
 from model import Factory, Simulation
