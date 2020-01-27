@@ -65,10 +65,10 @@ class Unit(UnitBase, UnitField, Strategy):
         """
         if centurion is not None and self.distance(centurion) < 3:
             return delay(self.reset_braveness)()
-        a_1 = 15 # Moral damage taken by the furthest unit from the enemies
+        a_1 = 10 # Moral damage taken by the furthest unit from the enemies
         b_1 = 10 # Moral increase for the closest unit from the enemies
         m_1 = int(-(a_1 + b_1) * remote + b_1)
-        a_2 = 15 # Moral damage is enemy army is way larger
+        a_2 = 10 # Moral damage is enemy army is way larger
         b_2 = 10 # Moral increase if enemy army is way smaller
         m_2 = int(a_2 - (a_2 + b_2) * (a_2/(a_2 + b_2))**ratio)
         return delay(self.change_moral)(m_1 + m_2)
