@@ -1,3 +1,4 @@
+"""Reuse calculations by caching function output."""
 from functools import wraps
 from inspect import signature
 

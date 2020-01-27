@@ -1,3 +1,4 @@
+"""Unification of unit components and decision logic."""
 from random import random
 import numpy as np
 
@@ -42,7 +43,7 @@ class Unit(UnitBase, UnitField, Strategy):
         If close enough attack, else move closer.
         """
         def criteria(other):
-            close = self.closer * other.distance(self)/sum_distances
+            close = self.closer * self.distance(other)/sum_distances
             weak = self.weaker * other.health/sum_health
 
             return close + weak
@@ -61,14 +62,14 @@ class Unit(UnitBase, UnitField, Strategy):
     @tools(clock=True)
     def moral_update(self, centurion, remote, ratio):
         """If a centurion is close, be brave.
-        Puss out if enemies are far.
+        Lose braveness out if enemies are far.
         """
         if centurion is not None and self.distance(centurion) < 3:
             return delay(self.reset_braveness)()
         #If there is not any centurion near:
         a_1 = 10 # Moral damage taken by the furthest unit from the enemies
         b_1 = 10 # Moral increase for the closest unit from the enemies
-        variation_1 = int(-(a_1 + b_1) * remote + b_1) 
+        variation_1 = int(-(a_1 + b_1) * remote + b_1)
         # Variation caused by the proximity of the unit with enemies
         a_2 = 10 # Moral damage is enemy army is way larger
         b_2 = 10 # Moral increase if enemy army is way smaller
@@ -77,11 +78,13 @@ class Unit(UnitBase, UnitField, Strategy):
         return delay(self.change_moral)(variation_1 + variation_2)
 
     @delay
-    def attack(self, target):
-        target.health -= self.strength
+    def attack(self, enemy):
+        """Attack enemy indulging damage according to own strength."""
+        enemy.health -= self.strength
 
     @delay
     def move(self, direction):
+        """Move in given direction according to own strength."""
         self.coords += self.speed * direction
 
     @delay

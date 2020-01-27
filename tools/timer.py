@@ -1,3 +1,4 @@
+"""Utility to time function executions and report records."""
 from functools import wraps
 from time import time
 
@@ -44,4 +45,3 @@ def clock_report():
     print("Clock report :")
     for name, (count, total) in Clock.report().items():
         print(f"{name:<50} (x{count:<5}): {total:.3f} s")
-

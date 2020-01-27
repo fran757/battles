@@ -1,4 +1,4 @@
-"""Composant pattern-based unit with army-building factory.
+"""Component pattern-based unit with army-building factory.
 Simulation container for successive battle states.
 """
 from .army import Army

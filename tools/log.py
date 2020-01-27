@@ -1,3 +1,4 @@
+"""Utility to log message on command or on function calls."""
 from functools import wraps
 from inspect import signature
 

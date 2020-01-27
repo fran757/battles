@@ -1,3 +1,4 @@
+"""Unit component determining unit type."""
 from dataclasses import dataclass
 
 
@@ -7,7 +8,7 @@ class UnitBase:
     strength: int
     reach: float
     speed: int
-    _health: int  # todo: max/health separation (immutable base)
+    _health: int
     braveness: int = 100
     time_fleeing: int = 0
 

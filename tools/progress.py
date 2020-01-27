@@ -1,3 +1,4 @@
+"""Basic progress bar utility."""
 from dataclasses import dataclass
 
 @dataclass
