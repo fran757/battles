@@ -1,3 +1,4 @@
+"""Read simulations and write states to file."""
 from itertools import islice
 import numpy as np
 
@@ -40,7 +41,7 @@ def read_battle(file_name):
 
 
 def write_battle(sides, file_name, mode):
-    """Write given both sides of a battle to file.
+    """Write both sides of a battle to file.
     mode tells whether to append or overwrite file.
     """
     with open(file_name, mode) as file:
