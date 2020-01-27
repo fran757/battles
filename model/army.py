@@ -15,7 +15,7 @@ class Info:
     remote: float
     ratio: float
     barycenter: np.ndarray
-    enemies: List["Unit"]  # todo: just give target ?
+    enemies: List["Unit"]
     sum_health: int
     sum_distances: float
 
